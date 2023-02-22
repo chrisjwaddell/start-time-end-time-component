@@ -5,6 +5,9 @@ Times are chosen in 15 minute periods. For example, the start time can be at 8:0
 A time period can't span over more than one day. It must fall within that day.
 You can choose the day, by default, it opens as the current day.
 
+
+![](start-time-end-time-component.jpg)
+
 If the date chosen is the current day, Start time is from midnight to the current time in 15 minute intervals. So if it's 10am, you can choose the start time from midnight to 10am.
 If it's on any previous day, Start time is a list of all time intervals from midnight to 11:45 PM.
 

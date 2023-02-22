@@ -105,7 +105,7 @@
 
 
 .day__timebar {
-    margin: 5px;
+    /* margin: 5px; */
 }
 
 .day__timebar--text {
@@ -126,14 +126,26 @@
     font-size: 14px;
 }
 
+
 .day__timebar--bar {
     width: 50px;
-    height: 7px;
     background-color: #4488ee;
-    position: absolute;
     left: 50px;
-    top: 10px;
     border-radius: 50px;
+}
+
+.day__timebar--bar,
+.day__timebar--bar-template {
+    height: 7px;
+    position: absolute;
+    top: 10px;
+}
+
+.day__timebar--bar-template {
+    width: 100%;
+    /* background-color: #4488ee; */
+    border: 1px solid #aaaaaa;
+    left: 0px;
 }
 
 
