@@ -16,10 +16,12 @@ If it's on any previous day, End time lists all the times from the Start time ch
 
 
 The height of the Start time and End time drop down list can be set in CSS.
-``
+`` \
 .times ul {
   height: 200px;
 ``
+
+localStorage and a variable are used to remember the last End Time and that End Time is used as the next Start Time.
 
 
 ## Settings
