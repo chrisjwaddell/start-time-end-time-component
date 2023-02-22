@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Start time End time component</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+    <link rel="stylesheet" href="./style/style.css">
+    <link rel="stylesheet" href="./style/start-time-end-time.css">
+    <style>
+
+    </style>
+</head>
+
+<body>
+    <div class="o-container" style="margin-top: 50px; margin-bottom: 50px;">
+
+        <div class="times start">
+            <div class="field-section">
+
+                <div class="day">
+                    <div class="triangle__container">
+                        <div class="triangle">
+                            <div class="triangle--left isvisible"></div>
+                        </div>
+                    </div>
+                    <h3 class="text-center">Today</h3>
+                    <div class="triangle__container">
+                        <div class="triangle">
+                            <div class="triangle--right"></div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="day__timebar">
+                        <div class="day__timebar--text">
+                        </div>
+                        <div class="day__timebar--text2">
+                        </div>
+                        <div class="day__timebar--bar" style="width: 0px;">
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="o-flex">
+                    <div class="start">
+                        <h3>Start Time</h3>
+                        <div class="o-flex">
+                            <div class="o-flex">
+                                <div class="field">
+                                    <ul tabindex="1">
+
+                                        <!-- <li data-ampm="AM">00:00 AM</li>
+                                        <li data-ampm="AM">00:15 AM</li>
+                                        <li data-ampm="AM">00:30 AM</li>
+                                        <li data-ampm="AM">00:45 AM</li>
+                                        <li data-ampm="AM">01:00 AM</li>
+                                        <li data-ampm="AM">01:15 AM</li>
+                                        <li data-ampm="AM">01:30 AM</li>
+                                        <li data-ampm="AM">01:45 AM</li>
+                                        <li data-ampm="AM">02:00 AM</li>
+                                        <li data-ampm="AM">02:15 AM</li>
+                                        <li data-ampm="AM">02:30 AM</li>
+                                        <li data-ampm="AM">02:45 AM</li>
+                                        <li data-ampm="AM">03:00 AM</li>
+                                        <li data-ampm="AM">03:15 AM</li>
+                                        <li data-ampm="AM">03:30 AM</li>
+                                        <li data-ampm="AM">03:45 AM</li>
+                                        <li data-ampm="AM">02</li>
+                                        <li data-ampm="AM">03</li>
+                                        <li data-ampm="AM">04</li>
+                                        <li data-ampm="AM">05</li>
+                                        <li data-ampm="AM">06</li>
+                                        <li data-ampm="AM">07</li>
+                                        <li data-ampm="AM">08</li>
+                                        <li data-ampm="AM">09</li>
+                                        <li data-ampm="AM">10</li>
+                                        <li data-ampm="AM" class="selected">11</li>
+                                        <li data-ampm="PM">12</li>
+                                        <li data-ampm="PM">01</li>
+                                        <li data-ampm="PM">02</li>
+                                        <li data-ampm="PM">03</li>
+                                        <li data-ampm="PM">04</li>
+                                        <li data-ampm="PM">05</li>
+                                        <li data-ampm="PM">06</li>
+                                        <li data-ampm="PM">07</li>
+                                        <li data-ampm="PM">08</li>
+                                        <li data-ampm="PM">09</li>
+                                        <li data-ampm="PM">10</li>
+                                        <li data-ampm="PM">11</li>
+                                        <li data-ampm="AM">0</li> -->
+
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="end">
+                        <h3>End Time</h3>
+                        <div class="o-flex">
+                            <div class="o-flex">
+                                <div class="field">
+                                    <ul tabindex="2">
+                                        <li data-ampm="AM" class="">0</li>
+                                        <li data-ampm="AM">1</li>
+                                        <li data-ampm="AM">2</li>
+                                        <li data-ampm="AM">3</li>
+                                        <li data-ampm="AM">4</li>
+                                        <li data-ampm="AM">5</li>
+                                        <li data-ampm="AM">6</li>
+                                        <li data-ampm="AM">7</li>
+                                        <li data-ampm="AM">8</li>
+                                        <li data-ampm="AM" class="">9</li>
+                                        <li data-ampm="AM">10</li>
+                                        <li data-ampm="AM">11</li>
+                                        <li data-ampm="PM">12</li>
+                                        <li data-ampm="PM">1</li>
+                                        <li data-ampm="PM">2</li>
+                                        <li data-ampm="PM" class="">3</li>
+                                        <li data-ampm="PM">4</li>
+                                        <li data-ampm="PM">5</li>
+                                        <li data-ampm="PM">6</li>
+                                        <li data-ampm="PM">7</li>
+                                        <li data-ampm="PM">8</li>
+                                        <li data-ampm="PM" class="selected">9</li>
+                                        <li data-ampm="PM">10</li>
+                                        <li data-ampm="PM">11</li>
+                                        <li data-ampm="AM">0</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div style="margin-top: 40px;text-align: center;">
+            <button class="add">Add</button>
+
+            <div class="time-items">
+
+            </div>
+        </div>
+
+    </div>
+
+
+
+</body>
+
+<script src="./scripts/utils.js"></script>
+<script src="./scripts/start-time-end-time.js"></script>
+<script src="./scripts/app.js"></script>
+
+</html>
