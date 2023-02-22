@@ -28,8 +28,8 @@ localStorage and a variable are used to remember the last End Time and that End 
 
 
 ## Settings
-Settings can be adjusted in *start-time-end-time.js* in the *settings* object.
-24 hour time or hh:mm AM/PM format
+Settings can be adjusted in *start-time-end-time.js* in the *settings* object. \
+24 hour time or hh:mm AM/PM format \
 warnOver12Hrs - It warns you if you've chosen a time period over 12 hours.
 
 
