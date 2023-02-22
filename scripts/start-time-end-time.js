@@ -16,6 +16,7 @@ const settings = {
 // selected class (SC) name for items selected in ul list
 const SC = "selected"
 
+const COMPONENT_WIDTH = 372
 
 let today = true
 let lastET
@@ -465,12 +466,12 @@ function timebar(st, et) {
         }
     }
 
-    if ((timeDecimal(st, settings.hr24, true) * 300) > 160) {
+    if ((timeDecimal(st, settings.hr24, true) * COMPONENT_WIDTH) > 160) {
         elTimebarText.style.left = "160px"
     } else {
-        elTimebarText.style.left = timeDecimal(st, settings.hr24, true) * 300 + "px"
+        elTimebarText.style.left = timeDecimal(st, settings.hr24, true) * COMPONENT_WIDTH + "px"
     }
-    elTimebarBar.style.left = timeDecimal(st, settings.hr24, true) * 300 + "px"
+    elTimebarBar.style.left = timeDecimal(st, settings.hr24, true) * COMPONENT_WIDTH + "px"
 
     if (st === "0") {
         elTimebarBar.style.width = "0px"
@@ -484,7 +485,7 @@ function timebar(st, et) {
             elTimebarText2.textContent = " "
         } else {
 
-            elTimebarBar.style.width = (timeDecimal(et, settings.hr24, false) - timeDecimal(st, settings.hr24, true)) * 300 + "px"
+            elTimebarBar.style.width = (timeDecimal(et, settings.hr24, false) - timeDecimal(st, settings.hr24, true)) * COMPONENT_WIDTH + "px"
             elTimebarText.textContent = st + "-" + et
 
         }
