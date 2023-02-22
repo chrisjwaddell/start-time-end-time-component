@@ -15,8 +15,8 @@ If it's on the current day, End time lists all the times from the Start time cho
 If it's on any previous day, End time lists all the times from the Start time chosen till 11:45 PM.
 
 
-The height of the Start time and End time drop down list can be set in CSS.
-`` <br>
+The height of the Start time and End time drop down list can be set in CSS. \
+``
 .times ul {
   height: 200px;
 ``

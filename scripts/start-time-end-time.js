@@ -6,8 +6,8 @@ const ETULQueryString = ".end ul"
 const settings = {
     warnOver12Hrs: true,
     defaultST: "07:00 AM",
-    excludeAfterNowET: true,
     defaultHrsBeforeToChooseST: 3,
+    excludeAfterNowET: true,
     nightIsDark: true,
     hr24: false
 }
@@ -80,7 +80,6 @@ function timesPopulate(st, et, ulQueryString, zeroTozero) {
     let et24h;
     (etampm.toUpperCase() === "PM" && eth !== 12) ? et24h = eth + 12: et24h = eth
 
-    // et24h =
     if ((etampm.toUpperCase() === "PM") && (eth !== 12)) {
         et24h = eth + 12
     } else {
@@ -149,7 +148,6 @@ function timesPopulate(st, et, ulQueryString, zeroTozero) {
 
             }
 
-            // elUL.appendChild(elLI)
             result.push(elLI)
         })
 
@@ -170,11 +168,9 @@ function onSTETPageLoad() {
 
     getLastET()
 
-
     dateChange()
 
     refreshST(STULQueryString)
-    // today = isToday()
 }
 
 
@@ -258,14 +254,7 @@ function lastTimeRounded(dt) {
         min
     } = dmyhm(dt)
 
-    // console.log(y, m, d, hr, min)
-
-    // console.log(min % 15)
     if (min % 15 !== 0) {
-        // console.log((15 - (min % 15)))
-        // console.log((60000 * (15 - (min % 15))))
-        // lastET += (60000 * (15 - (min % 15)))
-        // setLastET(lastET)
         return dt + 60000 * (15 - (min % 15))
     } else {
         return dt
@@ -390,8 +379,6 @@ function refreshETTime(time) {
     if (dd === 0) {
         // Today
         timesPopulate(time, timehmampm(new Date(lastTimeRounded(now().valueOf() + 100000)), settings.hr24), ETULQueryString, zeroTozero)
-
-        midnight(elETUL, settings.hr24)
     } else {
         if (settings.hr24) {
             timesPopulate(time, "23:45", ETULQueryString, zeroTozero)
@@ -460,7 +447,6 @@ let elTimebarText2 = document.querySelector(".day__timebar--text2")
 function timebar(st, et) {
     elTimebarText.style.width = "140px"
 
-    // elTimebarText2.textContent = (timeDecimal(et, settings.hr24, false) - timeDecimal(st, settings.hr24, true))
     let duration
     if ((st === "0") || (et === "0")) {
         duration = 0
@@ -468,8 +454,6 @@ function timebar(st, et) {
         duration = (timeDecimal(et, settings.hr24, false) - timeDecimal(st, settings.hr24, true))
     }
 
-    console.log(timeDecimal(et, settings.hr24, true), timeDecimal(st, settings.hr24, true))
-    // console.log(duration)
     if (duration < 0.04166) {
         elTimebarText2.textContent = (duration * 60) + " mins"
     } else {
