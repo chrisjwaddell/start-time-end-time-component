@@ -144,7 +144,8 @@
 .day__timebar--bar-template {
     width: 100%;
     /* background-color: #4488ee; */
-    border: 1px solid #aaaaaa;
+    border-top: 1px solid #aaaaaa;
+    border-bottom: 1px solid #aaaaaa;
     left: 0px;
 }
 

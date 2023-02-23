@@ -5,6 +5,7 @@ Times are chosen in 15 minute periods. For example, the start time can be at 8:0
 A time period can't span over more than one day. It must fall within that day.
 You can choose the day, by default, it opens as the current day.
 
+Here is a screenshot:
 
 ![](start-time-end-time-component.jpg)
 
@@ -27,10 +28,11 @@ The height of the Start time and End time drop down list can be set in CSS. \
 localStorage and a variable are used to remember the last End Time and that End Time is used as the next Start Time.
 
 
+
 ## Settings
 Settings can be adjusted in *start-time-end-time.js* in the *settings* object. \
-24 hour time or hh:mm AM/PM format \
-warnOver12Hrs - It warns you if you've chosen a time period over 12 hours.
+* 24 hour time or hh:mm AM/PM format \
+* warnOver12Hrs - Boolean - Warns you if you've chosen a time period over 12 hours.
 
 
 

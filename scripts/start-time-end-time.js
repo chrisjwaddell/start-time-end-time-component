@@ -159,7 +159,6 @@ function timesPopulate(st, et, ulQueryString, zeroTozero) {
     elUL.innerHTML = ""
 
     result.forEach(li => elUL.appendChild(li))
-
 }
 
 
