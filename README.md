@@ -1,6 +1,6 @@
 # Start time, End time Component
 
-This is a specific sort of time range picker with start time and end time that must fall on the same day. Its very fast and useful for things like time keeping apps.
+This is a specific sort of time range picker with start time and end time that must fall within the same day. Its very fast and useful for things like time keeping apps. It remembers the last End time and it becomes the Start time for the next entry.
 Times are chosen in 15 minute periods. For example, the start time can be at 8:00 AM, 8:15 AM, 8:30 AM or 8:45 AM.
 A time period can't span over more than one day. It must fall within that day.
 You can choose the day, by default, it opens as the current day.
@@ -30,8 +30,8 @@ localStorage and a variable are used to remember the last End Time and that End 
 
 
 ## Settings
-Settings can be adjusted in *start-time-end-time.js* in the *settings* object. \
-* 24 hour time or hh:mm AM/PM format \
+Settings can be adjusted in *start-time-end-time.js* in the *settings* object.
+* 24 hour time or hh:mm AM/PM format
 * warnOver12Hrs - Boolean - Warns you if you've chosen a time period over 12 hours.
 
 

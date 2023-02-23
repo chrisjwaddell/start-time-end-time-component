@@ -1,4 +1,6 @@
-// ^TIME FUNCTIONS
+/* ******************************************************************************
+// ^DATE
+ *******************************************************************************/
 
 const now = () => new Date()
 
@@ -53,6 +55,32 @@ function dayDiff(dt1, dt2) {
 }
 
 
+// Go forward or back x days
+function dateChangeDays(dt, days) {
+    let d = new Date(dt);
+    return new Date(d.setDate(d.getDate() + days));
+}
+
+
+// Assumes all dates in 2000 to 2099
+function dateToDMYY(dt, seperator = "/") {
+    let da = new Date(dt)
+
+    let d = da.getDate() < 10 ? da.getDate() : da.getDate()
+    let m = da.getMonth() < 9 ? Number(da.getMonth() + 1) : Number(da.getMonth() + 1)
+    let y = String(da.getFullYear()).replace("20", "")
+    return d + seperator + m + seperator + y
+}
+
+
+
+
+
+/* ******************************************************************************
+// ^TIME
+ *******************************************************************************/
+
+
 // Given a time in "hh:mm AM/PM" or "hh:mm"
 // format, it returns an object with h and m
 // midnightStart true means "00:00" is 0, false, it's 24
@@ -88,7 +116,7 @@ function timeHourMin(time, hr24, midnightStart) {
     }
 }
 
-// st and et are in the format: hh:mm AM/PM
+// Epoch time to hh:mm AM/PM
 // hr24 boolean - 24 hour time
 function timehmampm(dt, hr24) {
     let {
@@ -151,24 +179,6 @@ function timeDecimal(time, hr24, midnightStart) {
 
 
 
-function dateChangeDays(dt, days) {
-    var d = new Date(dt);
-    return new Date(d.setDate(d.getDate() + days));
-}
-
-
-// Assumes all dates in 2000 to 2099
-function dateToDMYY(dt, seperator = "/") {
-    let da = new Date(dt)
-
-    let d = da.getDate() < 10 ? da.getDate() : da.getDate()
-    let m = da.getMonth() < 9 ? Number(da.getMonth() + 1) : Number(da.getMonth() + 1)
-    let y = String(da.getFullYear()).replace("20", "")
-    return d + seperator + m + seperator + y
-}
-
-
-
 
 
 
@@ -179,12 +189,39 @@ function dateToDMYY(dt, seperator = "/") {
 
 // selectclass is the class that is used to show
 // that the item is selected
+// if nothing is selected, it returns -1
 function listFindSelected(parentUL, selectclass) {
-    return [].findIndex.call(parentUL.children, (cv) => cv.classList.contains(selectclass))
+    return [].findIndex.call(parentUL.childNodes, (cv) => cv.classList.contains(selectclass))
 }
 
+// Unselects the first item that's selected
+// Works for single select lists
 function listUnselect(parentUL, selectclass) {
     let i = listFindSelected(parentUL, selectclass)
     if (i !== -1) parentUL.childNodes[i].classList.remove(selectclass)
     parentUL.scrollTo(0, 0)
+}
+
+
+// Toggle on and off when an item in a list is selected
+// The list is a single select list
+// Usage: elSTUL.addEventListener("click", onListClick)
+function onListClick(e) {
+    const selectedPreviously = listFindSelected(e.target.parentNode, SC)
+    const selectedPreviouslyText = (selectedPreviously === -1) ? '' : e.target.parentNode.childNodes[selectedPreviously].textContent
+    const selectedNowText = e.target.textContent
+
+    // const sameField = previousField === e.target.parentNode
+    const sameField = true
+
+    if (selectedPreviously !== -1) {
+        if (selectedPreviouslyText === selectedNowText) {
+            if (sameField) e.target.classList.remove(SC)
+        } else {
+            e.target.parentNode.childNodes[selectedPreviously].classList.remove(SC)
+            e.target.classList.add(SC)
+        }
+    } else {
+        e.target.classList.add(SC)
+    }
 }
