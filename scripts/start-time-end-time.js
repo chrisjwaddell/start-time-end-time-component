@@ -431,7 +431,7 @@ function timebar(st, et) {
     if ((st === "0") || (et === "0")) {
         duration = 0
     } else {
-        duration = (timeDecimal(et, settingsSTET.hr24, false) - timeDecimal(st, settingsSTET.hr24, true))
+        duration = (timeDecimal(et, settingsSTET.hr24, true) - timeDecimal(st, settingsSTET.hr24, true))
     }
 
     if (duration < 0.04166) {
@@ -464,7 +464,7 @@ function timebar(st, et) {
             elTimebarText2.textContent = " "
         } else {
 
-            elTimebarBar.style.width = (timeDecimal(et, settingsSTET.hr24, false) - timeDecimal(st, settingsSTET.hr24, true)) * COMPONENT_WIDTH + "px"
+            elTimebarBar.style.width = (timeDecimal(et, settingsSTET.hr24, true) - timeDecimal(st, settingsSTET.hr24, true)) * COMPONENT_WIDTH + "px"
             elTimebarText.textContent = st + "-" + et
 
         }
