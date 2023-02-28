@@ -47,10 +47,6 @@
     align-items: center;
 }
 
-.day__container {
-    /* width: 25px; */
-}
-
 .triangle__container {
     display: inline-flex;
     height: 50px;
@@ -63,7 +59,6 @@
 
 .triangle {
     width: 100px;
-    /* margin: 0 auto; */
 }
 
 .day h3 {
@@ -71,6 +66,7 @@
     width: 200px;
     font-size: 2rem;
     line-height: 1.5;
+    font-weight: 600;
 }
 
 .triangle--left {
@@ -80,7 +76,6 @@
     border-top: 15px solid white;
     border-right: 15px solid #000000;
     border-bottom: 15px solid white;
-    /* border-left: 15px solid transparent; */
     visibility: hidden;
 }
 
@@ -90,7 +85,6 @@
     height: 0px;
     margin: 2px auto;
     border-top: 15px solid white;
-    /* border-right: 150px solid black; */
     border-bottom: 15px solid white;
     border-left: 15px solid #000000;
     visibility: hidden;
@@ -103,10 +97,6 @@
     position: relative;
 }
 
-
-.day__timebar {
-    /* margin: 5px; */
-}
 
 .day__timebar--text {
     width: 140px;
@@ -143,7 +133,6 @@
 
 .day__timebar--bar-template {
     width: 100%;
-    /* background-color: #4488ee; */
     border-top: 1px solid #aaaaaa;
     border-bottom: 1px solid #aaaaaa;
     left: 0px;
