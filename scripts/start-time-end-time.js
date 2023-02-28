@@ -18,8 +18,8 @@ const SC = "selected"
 
 
 // This should be the same as .times { width: 325 px;
-// minus margin x 2
-const COMPONENT_WIDTH = 325 - (2 * 5)
+// plus 5px margin left and right for start and end so ((2*5px) * 2)
+const COMPONENT_WIDTH = 300 + ((2 * 5) * 2)
 
 let lastET
 let dayChosen = new Date()
@@ -417,16 +417,7 @@ elDayRight.addEventListener("click", (e) => {
 })
 
 
-
-
-let elTimebarBar = document.querySelector(".day__timebar--bar")
-let elTimebarText = document.querySelector(".day__timebar--text")
-let elTimebarText2 = document.querySelector(".day__timebar--text2")
-
-
-function timebar(st, et) {
-    elTimebarText.style.width = "140px"
-
+function etstduration(st, et) {
     let duration
     if ((st === "0") || (et === "0")) {
         duration = 0
@@ -437,6 +428,30 @@ function timebar(st, et) {
             duration = (timeDecimal(et, settingsSTET.hr24, true) - timeDecimal(st, settingsSTET.hr24, true))
         }
     }
+
+    return duration
+}
+
+
+
+let elTimebarBar = document.querySelector(".day__timebar--bar")
+let elTimebarText = document.querySelector(".day__timebar--text")
+let elTimebarText2 = document.querySelector(".day__timebar--text2")
+
+
+function timebar(st, et) {
+    elTimebarText.style.width = "140px"
+
+    let duration = etstduration(st, et)
+    // if ((st === "0") || (et === "0")) {
+    //     duration = 0
+    // } else {
+    //     if (et.slice(0, 5) === "00:00") {
+    //         duration = (timeDecimal(et, settingsSTET.hr24, false) - timeDecimal(st, settingsSTET.hr24, true))
+    //     } else {
+    //         duration = (timeDecimal(et, settingsSTET.hr24, true) - timeDecimal(st, settingsSTET.hr24, true))
+    //     }
+    // }
 
     if (duration < 0.04166) {
         elTimebarText2.textContent = Math.floor(duration * 1440) + " mins"
@@ -468,7 +483,8 @@ function timebar(st, et) {
             elTimebarText2.textContent = " "
         } else {
 
-            elTimebarBar.style.width = (timeDecimal(et, settingsSTET.hr24, true) - timeDecimal(st, settingsSTET.hr24, true)) * COMPONENT_WIDTH + "px"
+            // elTimebarBar.style.width = ((timeDecimal(et, settingsSTET.hr24, true) - timeDecimal(st, settingsSTET.hr24, true))) * COMPONENT_WIDTH + "px"
+            elTimebarBar.style.width = etstduration(st, et) * COMPONENT_WIDTH + "px"
             elTimebarText.textContent = st + "-" + et
 
         }
