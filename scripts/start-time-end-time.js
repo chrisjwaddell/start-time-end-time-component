@@ -490,12 +490,14 @@ function timebar(st, et) {
     }
 
     if ((st === "0") || (st === "")) {
+        elTimebarStart.classList.remove("isvisible")
+        elTimebarStartMarker.classList.remove("isvisible")
+        elTimebarEnd.classList.remove("isvisible")
+        elTimebarEndMarker.classList.remove("isvisible")
+
         elTimebarBar.style.width = "0px"
         elTimebarEnd.style.left = elTimebarStart.style.left
         elTimebarText2.textContent = " "
-
-        elTimebarStart.classList.remove("isvisible")
-        elTimebarStartMarker.classList.remove("isvisible")
     } else {
 
         elTimebarStart.classList.add("isvisible")
@@ -511,13 +513,23 @@ function timebar(st, et) {
             elTimebarEndMarker.classList.remove("isvisible")
         } else {
 
-            // elTimebarBar.style.width = ((timeDecimal(et, settingsSTET.hr24, true) - timeDecimal(st, settingsSTET.hr24, true))) * COMPONENT_WIDTH + "px"
-            elTimebarBar.style.width = etstduration(st, et) * COMPONENT_WIDTH + "px"
-            elTimebarEnd.style.left = Number.parseInt(elTimebarStart.style.left) + (etstduration(st, et) * COMPONENT_WIDTH) + "px"
+            if ((st === "0") || (st === "")) {
+                elTimebarStart.classList.remove("isvisible")
+                elTimebarStartMarker.classList.remove("isvisible")
+                elTimebarEnd.classList.remove("isvisible")
+                elTimebarEndMarker.classList.remove("isvisible")
+            } else {
+                // elTimebarBar.style.width = ((timeDecimal(et, settingsSTET.hr24, true) - timeDecimal(st, settingsSTET.hr24, true))) * COMPONENT_WIDTH + "px"
+                elTimebarBar.style.width = etstduration(st, et) * COMPONENT_WIDTH + "px"
+                elTimebarEnd.style.left = Number.parseInt(elTimebarStart.style.left) + (etstduration(st, et) * COMPONENT_WIDTH) + "px"
+                elTimebarEndMarker.textContent = et
 
-            elTimebarEnd.classList.add("isvisible")
-            elTimebarEndMarker.classList.add("isvisible")
-            elTimebarEndMarker.textContent = et
+                elTimebarStart.classList.add("isvisible")
+                elTimebarStartMarker.classList.add("isvisible")
+                elTimebarEnd.classList.add("isvisible")
+                elTimebarEndMarker.classList.add("isvisible")
+            }
+
         }
     }
 
@@ -537,6 +549,12 @@ function timebar(st, et) {
 function timebarReset(st, et) {
     elTimebarBar.style.width = "0px"
     elTimebarBar.style.left = "20px"
+
+    elTimebarStart.classList.remove("isvisible")
+    elTimebarStartMarker.classList.remove("isvisible")
+    elTimebarEnd.classList.remove("isvisible")
+    elTimebarEndMarker.classList.remove("isvisible")
+
 }
 
 
