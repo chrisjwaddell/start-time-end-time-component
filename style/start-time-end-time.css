@@ -93,7 +93,7 @@
 
 .day__timebar {
     width: 100%;
-    height: 50px;
+    height: 75px;
     position: relative;
 }
 
@@ -105,7 +105,7 @@
 
 .day__timebar--text2 {
     width: 70px;
-    top: 36px;
+    top: 44px;
 }
 
 .day__timebar--text,
@@ -119,16 +119,17 @@
 
 .day__timebar--bar {
     width: 50px;
-    background-color: #4488ee;
+    /* background-color: #4488ee; */
+    background-color: #aa99cc;
     left: 50px;
-    border-radius: 50px;
+    /* border-radius: 50px; */
 }
 
 .day__timebar--bar,
 .day__timebar--bar-template {
-    height: 7px;
+    height: 15px;
     position: absolute;
-    top: 10px;
+    top: 25px;
 }
 
 .day__timebar--bar-template {
@@ -139,7 +140,90 @@
 }
 
 
+.day__timebar-start,
+.day__timebar-end {
+    height: 18px;
+    position: absolute;
+    top: 24px;
+    left: 0px;
+    width: 4px;
+    z-index: 500;
+    visibility: hidden;
+    background-color: #000000;
+    border-radius: 12px;
+    /* cursor: grab; */
+}
+
+
 .start .field,
 .end .field {
     margin: 0 auto;
+}
+
+
+.day__timebar .marker {
+    position: absolute;
+    width: 72px;
+    z-index: 100;
+    font-size: 14px;
+    padding: 4px;
+    border-radius: 5px;
+    visibility: hidden;
+    color: #fff;
+    background: #44bb55;
+    pointer-events: none;
+}
+
+/* top left */
+.day__timebar .marker.tl::after {
+    top: -7px;
+    left: 0px;
+    border-width: 0 10px 10px 0;
+}
+
+/* top right */
+.day__timebar .marker.tr::after {
+    top: -7px;
+    right: 0px;
+    border-width: 0 0 10px 10px;
+}
+
+/* bottom left */
+.day__timebar .marker.br::after {
+    top: 18px;
+    right: 0px;
+    border-width: 10px 0 0 10px;
+}
+
+/* bottom right */
+.day__timebar .marker.bl::after {
+    top: 18px;
+    left: 0px;
+    border-width: 10px 10px 0 0;
+}
+
+.day__timebar .marker::after {
+    content: "";
+    position: absolute;
+    height: 5px;
+    z-index: -10;
+    border-style: solid;
+    border-color: #44bb55 transparent;
+}
+
+.day__timebar .marker {
+    margin: 0;
+}
+
+.day__timebar .marker p {
+    font-size: 14px;
+}
+
+
+.day__timebar-start-marker {
+    top: -2px;
+}
+
+.day__timebar-end-marker {
+    bottom: 8px;
 }

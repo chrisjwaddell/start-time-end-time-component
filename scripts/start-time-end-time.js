@@ -4,7 +4,7 @@ const ETULQueryString = ".end ul"
 
 // start-time-end-time settingsSTET
 const settingsSTET = {
-    warnOver12Hrs: true,
+    warnOver12Hrs: false,
     defaultST: "07:00 AM",
     defaultHrsBeforeToChooseST: 3,
     excludeAfterNowET: true,
@@ -18,8 +18,15 @@ const SC = "selected"
 
 
 // This should be the same as .times { width: 325 px;
-// plus 5px margin left and right for start and end so ((2*5px) * 2)
-const COMPONENT_WIDTH = 300 + ((2 * 5) * 2)
+// minus 5px margin left and right for start and end so ((2*5px) * 2)
+const COMPONENT_WIDTH = 325 - ((2 * 5) * 2)
+// This must be the same width as in CSS
+// .day__timebar.marker { width.....
+const MARKER_WIDTH = 72
+//Black marker width, it should be the same as in CSS
+// .day__timebar - start, .day__timebar-end { width.....
+const STARTEND_MARKER_WIDTH = 4
+
 
 let lastET
 let dayChosen = new Date()
@@ -27,7 +34,6 @@ let currentDate = new Date()
 
 
 let elDD = document.querySelector(".day h3")
-
 
 let elSTUL = document.querySelector(STULQueryString)
 let elETUL = document.querySelector(ETULQueryString)
@@ -219,7 +225,6 @@ function dateChange() {
 document.addEventListener("DOMContentLoaded", onSTETPageLoad)
 
 
-
 // lastET is stored in a variable and in localStorage
 // When a start and end time period is added, the next time period
 // start time is the end time of the previous one
@@ -335,6 +340,8 @@ function refreshET() {
     } else {
         st = "0"
         stText = "0"
+        elTimebarStartMarker.classList.remove("isvisible")
+        elTimebarEndMarker.classList.remove("isvisible")
     }
 
 
@@ -346,9 +353,12 @@ function refreshET() {
             et = elETUL.childNodes[iet].textContent
         }
         etText = elETUL.childNodes[iet].textContent
+
+        elTimebarEndMarker.classList.add("isvisible")
     } else {
         et = "0"
         etText = "0"
+        elTimebarEndMarker.classList.remove("isvisible")
     }
 
 
@@ -363,6 +373,8 @@ function refreshET2() {
     refreshETTime(et)
     let st = selectedST()
     timebar(st, "0")
+
+    // elTimebarEndMarker.classList.remove("isvisible")
 }
 
 
@@ -435,25 +447,19 @@ function etstduration(st, et) {
 
 
 let elTimebarBar = document.querySelector(".day__timebar--bar")
-let elTimebarText = document.querySelector(".day__timebar--text")
 let elTimebarText2 = document.querySelector(".day__timebar--text2")
+let elTimebarStart = document.querySelector(".day__timebar-start")
+let elTimebarEnd = document.querySelector(".day__timebar-end")
+let elTimebarStartMarker = document.querySelector(".day__timebar-start-marker")
+let elTimebarEndMarker = document.querySelector(".day__timebar-end-marker")
 
 
 function timebar(st, et) {
-    elTimebarText.style.width = "140px"
 
     let duration = etstduration(st, et)
-    // if ((st === "0") || (et === "0")) {
-    //     duration = 0
-    // } else {
-    //     if (et.slice(0, 5) === "00:00") {
-    //         duration = (timeDecimal(et, settingsSTET.hr24, false) - timeDecimal(st, settingsSTET.hr24, true))
-    //     } else {
-    //         duration = (timeDecimal(et, settingsSTET.hr24, true) - timeDecimal(st, settingsSTET.hr24, true))
-    //     }
-    // }
 
     if (duration < 0.04166) {
+        // if it's less than an hour, use minutes as the duration measure
         elTimebarText2.textContent = Math.floor(duration * 1440) + " mins"
     } else {
         elTimebarText2.textContent = (duration * 24).toFixed(1) + " Hrs"
@@ -465,39 +471,70 @@ function timebar(st, et) {
     }
 
     if ((timeDecimal(st, settingsSTET.hr24, true) * COMPONENT_WIDTH) > 160) {
-        elTimebarText.style.left = "160px"
+        elTimebarText2.style.left = "160px"
     } else {
-        elTimebarText.style.left = timeDecimal(st, settingsSTET.hr24, true) * COMPONENT_WIDTH + "px"
+        elTimebarText2.style.left = timeDecimal(st, settingsSTET.hr24, true) * COMPONENT_WIDTH + "px"
     }
     elTimebarBar.style.left = timeDecimal(st, settingsSTET.hr24, true) * COMPONENT_WIDTH + "px"
+    elTimebarStart.style.left = timeDecimal(st, settingsSTET.hr24, true) * COMPONENT_WIDTH + "px"
 
-    if (st === "0") {
-        elTimebarBar.style.width = "0px"
-        elTimebarText.textContent = " "
-        elTimebarText2.textContent = " "
+
+    if ((timeDecimal(st, settingsSTET.hr24, true) * COMPONENT_WIDTH) >= (COMPONENT_WIDTH - MARKER_WIDTH)) {
+        elTimebarStartMarker.style.left = (timeDecimal(st, settingsSTET.hr24, true) * COMPONENT_WIDTH) - MARKER_WIDTH + (STARTEND_MARKER_WIDTH / 2) + "px"
+        elTimebarStartMarker.classList.add("br")
+        elTimebarStartMarker.classList.remove("bl")
     } else {
+        elTimebarStartMarker.style.left = timeDecimal(st, settingsSTET.hr24, true) * COMPONENT_WIDTH + (STARTEND_MARKER_WIDTH / 2) + "px"
+        elTimebarStartMarker.classList.add("bl")
+        elTimebarStartMarker.classList.remove("br")
+    }
+
+    if ((st === "0") || (st === "")) {
+        elTimebarBar.style.width = "0px"
+        elTimebarEnd.style.left = elTimebarStart.style.left
+        elTimebarText2.textContent = " "
+
+        elTimebarStart.classList.remove("isvisible")
+        elTimebarStartMarker.classList.remove("isvisible")
+    } else {
+
+        elTimebarStart.classList.add("isvisible")
+        elTimebarStartMarker.classList.add("isvisible")
+        elTimebarStartMarker.textContent = st
 
         if (et === "0") {
             elTimebarBar.style.width = "20px"
-            elTimebarText.textContent = st
+            elTimebarEnd.style.left = Number.parseInt(elTimebarStart.style.left) + 20 + "px"
             elTimebarText2.textContent = " "
+
+            elTimebarEnd.classList.remove("isvisible")
+            elTimebarEndMarker.classList.remove("isvisible")
         } else {
 
             // elTimebarBar.style.width = ((timeDecimal(et, settingsSTET.hr24, true) - timeDecimal(st, settingsSTET.hr24, true))) * COMPONENT_WIDTH + "px"
             elTimebarBar.style.width = etstduration(st, et) * COMPONENT_WIDTH + "px"
-            elTimebarText.textContent = st + "-" + et
+            elTimebarEnd.style.left = Number.parseInt(elTimebarStart.style.left) + (etstduration(st, et) * COMPONENT_WIDTH) + "px"
 
+            elTimebarEnd.classList.add("isvisible")
+            elTimebarEndMarker.classList.add("isvisible")
+            elTimebarEndMarker.textContent = et
         }
     }
-    elTimebarText2.style.left = elTimebarText.style.left
+
+    if ((timeDecimal(et, settingsSTET.hr24, true) * COMPONENT_WIDTH) >= (COMPONENT_WIDTH - MARKER_WIDTH)) {
+        elTimebarEndMarker.style.left = (timeDecimal(et, settingsSTET.hr24, true) * COMPONENT_WIDTH) - MARKER_WIDTH + (STARTEND_MARKER_WIDTH / 2) + "px"
+        elTimebarEndMarker.classList.add("tr")
+        elTimebarEndMarker.classList.remove("tl")
+    } else {
+        elTimebarEndMarker.style.left = (timeDecimal(et, settingsSTET.hr24, true) * COMPONENT_WIDTH) + (STARTEND_MARKER_WIDTH / 2) + "px"
+        elTimebarEndMarker.classList.add("tl")
+        elTimebarEndMarker.classList.remove("tr")
+    }
 
 }
 
 
 function timebarReset(st, et) {
-    elTimebarText.style.left = "20px"
-    elTimebarText.style.width = "20px"
-    elTimebarText.textContent = " "
     elTimebarBar.style.width = "0px"
     elTimebarBar.style.left = "20px"
 }
