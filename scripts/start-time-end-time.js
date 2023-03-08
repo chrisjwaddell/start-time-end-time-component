@@ -433,7 +433,8 @@ elDayRight.addEventListener("click", (e) => {
 })
 
 
-function etstduration(st, et) {
+// displays duration in decimal
+function durationDecimal(st, et) {
     let duration
     if ((st === "0") || (et === "0")) {
         duration = 0
@@ -449,14 +450,16 @@ function etstduration(st, et) {
 }
 
 
+// Displays duration as a string with 'hours'
+// or 'mins'
 function duration(st, et) {
-    let dur = etstduration(st, et)
+    let dur = durationDecimal(st, et)
 
     if (dur < 0.04166) {
         // if it's less than an hour, use minutes as the duration measure
         return Math.floor(dur * 1440) + " mins"
     } else {
-        return (dur * 24).toFixed(1) + " Hrs"
+        return (dur * 24).toFixed(1) + " hrs"
     }
 }
 
@@ -530,8 +533,8 @@ function timebar(st, et) {
                 elTimebarEndMarker.classList.remove("isvisible")
             } else {
                 // elTimebarBar.style.width = ((timeDecimal(et, settingsSTET.hr24, true) - timeDecimal(st, settingsSTET.hr24, true))) * COMPONENT_WIDTH + "px"
-                elTimebarBar.style.width = etstduration(st, et) * COMPONENT_WIDTH + "px"
-                elTimebarEnd.style.left = Number.parseInt(elTimebarStart.style.left) + (etstduration(st, et) * COMPONENT_WIDTH) + "px"
+                elTimebarBar.style.width = durationDecimal(st, et) * COMPONENT_WIDTH + "px"
+                elTimebarEnd.style.left = Number.parseInt(elTimebarStart.style.left) + (durationDecimal(st, et) * COMPONENT_WIDTH) + "px"
                 elTimebarEndMarker.textContent = et
 
                 elTimebarStart.classList.add("isvisible")
@@ -598,7 +601,7 @@ function custom(st, et) {
         elTestP.textContent = dur
     }
 
-    let durationDec = etstduration(st, et)
+    let durationDec = durationDecimal(st, et)
     let warn = stetWarnings(durationDec)
     if (warn) {
         alert(warn)
