@@ -4,7 +4,8 @@ const ETULQueryString = ".end ul"
 
 // start-time-end-time settingsSTET
 const settingsSTET = {
-    warnOver12Hrs: false,
+    // if 0, don't warn, if 12, it warns if duration over 12 hours
+    durationOverXHrs: 10,
     defaultST: "07:00 AM",
     defaultHrsBeforeToChooseST: 3,
     excludeAfterNowET: true,
@@ -355,16 +356,17 @@ function refreshET() {
         etText = elETUL.childNodes[iet].textContent
 
         elTimebarEndMarker.classList.add("isvisible")
+
     } else {
         et = "0"
         etText = "0"
         elTimebarEndMarker.classList.remove("isvisible")
+        elETUL.scrollTo(0, 0)
     }
 
 
     timebar(stText, etText)
-
-    elETUL.scrollTo(0, 0)
+    custom(stText, etText)
 
     return st
 }
@@ -447,9 +449,36 @@ function etstduration(st, et) {
 }
 
 
+function duration(st, et) {
+    let dur = etstduration(st, et)
+
+    if (dur < 0.04166) {
+        // if it's less than an hour, use minutes as the duration measure
+        return Math.floor(dur * 1440) + " mins"
+    } else {
+        return (dur * 24).toFixed(1) + " Hrs"
+    }
+}
+
+
+// it uses settingsSTET and generates warnings
+// based on the settings
+// Currently the only setting warning is
+// duration threshold
+// warning if it's over x hours
+function stetWarnings(duration) {
+    let warn = ""
+    let durationThreshold = settingsSTET.durationOverXHrs
+
+    if ((duration > (durationThreshold / 24)) && (durationThreshold !== 0)) {
+        warn = requiredMsg(warn, "This is over " + durationThreshold + " hours.")
+    }
+
+    return warn
+}
+
 
 let elTimebarBar = document.querySelector(".day__timebar--bar")
-let elTimebarText2 = document.querySelector(".day__timebar--text2")
 let elTimebarStart = document.querySelector(".day__timebar-start")
 let elTimebarEnd = document.querySelector(".day__timebar-end")
 let elTimebarStartMarker = document.querySelector(".day__timebar-start-marker")
@@ -458,25 +487,6 @@ let elTimebarEndMarker = document.querySelector(".day__timebar-end-marker")
 
 function timebar(st, et) {
 
-    let duration = etstduration(st, et)
-
-    if (duration < 0.04166) {
-        // if it's less than an hour, use minutes as the duration measure
-        elTimebarText2.textContent = Math.floor(duration * 1440) + " mins"
-    } else {
-        elTimebarText2.textContent = (duration * 24).toFixed(1) + " Hrs"
-        if (duration >= 0.5) {
-            if (settingsSTET.warnOver12Hrs) {
-                alert("This is over 12 hours")
-            }
-        }
-    }
-
-    if ((timeDecimal(st, settingsSTET.hr24, true) * COMPONENT_WIDTH) > 160) {
-        elTimebarText2.style.left = "160px"
-    } else {
-        elTimebarText2.style.left = timeDecimal(st, settingsSTET.hr24, true) * COMPONENT_WIDTH + "px"
-    }
     elTimebarBar.style.left = timeDecimal(st, settingsSTET.hr24, true) * COMPONENT_WIDTH + "px"
     elTimebarStart.style.left = timeDecimal(st, settingsSTET.hr24, true) * COMPONENT_WIDTH + "px"
 
@@ -499,7 +509,6 @@ function timebar(st, et) {
 
         elTimebarBar.style.width = "0px"
         elTimebarEnd.style.left = elTimebarStart.style.left
-        elTimebarText2.textContent = " "
     } else {
 
         elTimebarStart.classList.add("isvisible")
@@ -509,7 +518,6 @@ function timebar(st, et) {
         if (et === "0") {
             elTimebarBar.style.width = "20px"
             elTimebarEnd.style.left = Number.parseInt(elTimebarStart.style.left) + 20 + "px"
-            elTimebarText2.textContent = " "
 
             elTimebarEnd.classList.remove("isvisible")
             elTimebarEndMarker.classList.remove("isvisible")
@@ -567,4 +575,32 @@ function dateFormat(time, hr24) {
     let dt = new Date(dayChosen.getFullYear(), dayChosen.getMonth(), dayChosen.getDate(), hr.h, hr.m, 0, 0)
 
     return dt.valueOf()
+}
+
+
+function requiredMsg(msg, overallmsg) {
+    return overallmsg = overallmsg === '' ? msg : overallmsg + "\n" + msg
+}
+
+
+// This is a custom function
+// If you want to display duration somewhere
+// add the code in here with the 'duration' function
+// Settings warning code can be added here too.
+function custom(st, et) {
+    const elTestP = document.querySelector(".test p")
+    let dur = duration(st, et)
+    console.log(dur)
+
+    if (dur === "0 mins") {
+        elTestP.textContent = " "
+    } else {
+        elTestP.textContent = dur
+    }
+
+    let durationDec = etstduration(st, et)
+    let warn = stetWarnings(durationDec)
+    if (warn) {
+        alert(warn)
+    }
 }
