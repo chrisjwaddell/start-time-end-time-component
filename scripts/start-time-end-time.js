@@ -364,6 +364,8 @@ function refreshET() {
 
     timebar(stText, etText)
 
+    elETUL.scrollTo(0, 0)
+
     return st
 }
 
