@@ -55,6 +55,12 @@ function dayDiff(dt1, dt2) {
 }
 
 
+function hoursDiff(dt1, dt2) {
+    const HOUR = 1000 * 60 * 60;
+    return Math.floor((dt1 - dt2) / HOUR)
+}
+
+
 // Go forward or back x days
 function dateChangeDays(dt, days) {
     let d = new Date(dt);

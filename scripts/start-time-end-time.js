@@ -6,8 +6,12 @@ const ETULQueryString = ".end ul"
 const settingsSTET = {
     // if 0, don't warn, if 12, it warns if duration over 12 hours
     durationOverXHrs: 10,
+    // This helps when chosing a time today rather than yesterday
+    // if 0, warning is off
+    startTimeXHrsBeforeNow: 16,
     defaultST: "07:00 AM",
     defaultHrsBeforeToChooseST: 3,
+    // end time can't show times after now
     excludeAfterNowET: true,
     nightIsDark: true,
     hr24: false
@@ -47,27 +51,26 @@ const selectedST = () => (findIndexSelectedST() !== -1) ? elSTUL.childNodes[find
 const selectedET = () => (findIndexSelectedET() !== -1) ? elETUL.childNodes[findIndexSelectedET()].textContent : ""
 
 
-function getLastET() {
+function getLastETStored() {
     if (!lastET) {
         if (localStorage.getItem("lastET")) {
             if (Number(localStorage.getItem("lastET")) === "NaN") {
-                setLastET(new Date().valueOf())
+                setLastETStored(new Date().valueOf())
             } else {
                 lastET = Number(localStorage.getItem("lastET"))
             }
         } else {
-            setLastET(new Date().valueOf())
+            setLastETStored(new Date().valueOf())
         }
     }
 }
 
 
 // takes a number
-function setLastET(lastet) {
+function setLastETStored(lastet) {
     lastET = lastet
     localStorage.setItem("lastET", String(lastet))
 }
-
 
 
 // Populate list based on start time (st) and end time (et)
@@ -174,7 +177,7 @@ function onSTETPageLoad() {
     dayChosen = new Date()
     currentDate = new Date()
 
-    getLastET()
+    getLastETStored()
 
     dateChange()
 
@@ -226,6 +229,7 @@ function dateChange() {
 document.addEventListener("DOMContentLoaded", onSTETPageLoad)
 
 
+// This chooses a time in the list given time text
 // lastET is stored in a variable and in localStorage
 // When a start and end time period is added, the next time period
 // start time is the end time of the previous one
@@ -275,10 +279,9 @@ function lastTimeRounded(dt) {
 // it also chooses the Start time based on the last time
 // that was chosen
 function refreshST() {
-
     let dd = dayDiff(dayChosen, now())
 
-    setLastET(lastTimeRounded(lastET))
+    setLastETStored(lastTimeRounded(lastET))
 
     let chosenVsLastET = dayDiff(dayChosen, lastET)
 
@@ -312,7 +315,6 @@ function refreshST() {
         chooseTime(timehmampm(lastET, settingsSTET.hr24), STULQueryString)
         refreshETTime(timehmampm(lastET, settingsSTET.hr24))
     }
-
 
 }
 
@@ -366,7 +368,7 @@ function refreshET() {
 
 
     timebar(stText, etText)
-    custom(stText, etText)
+    customET(stText, etText)
 
     return st
 }
@@ -376,9 +378,13 @@ function refreshET2() {
     let et = refreshET()
     refreshETTime(et)
     let st = selectedST()
-    timebar(st, "0")
 
-    // elTimebarEndMarker.classList.remove("isvisible")
+    if (st === "") {
+        // If no ST selected, ET list is empty
+        elETUL.innerHTML = ""
+    }
+
+    timebar(st, "0")
 }
 
 
@@ -391,7 +397,6 @@ function refreshETTime(time) {
     } else {
         zeroTozero = false
     }
-
 
     if (dd === 0) {
         // Today
@@ -469,12 +474,19 @@ function duration(st, et) {
 // Currently the only setting warning is
 // duration threshold
 // warning if it's over x hours
-function stetWarnings(duration) {
+function stetWarnings(duration, st) {
     let warn = ""
     let durationThreshold = settingsSTET.durationOverXHrs
 
     if ((duration > (durationThreshold / 24)) && (durationThreshold !== 0)) {
         warn = requiredMsg(warn, "This is over " + durationThreshold + " hours.")
+    }
+
+    let stHoursBeforeNow = settingsSTET.startTimeXHrsBeforeNow
+    let hrsAgo = hoursDiff(now(), dateFormat(st))
+
+    if ((stHoursBeforeNow <= hrsAgo) && (stHoursBeforeNow !== 0)) {
+        warn = requiredMsg(warn, "The Start time was " + hrsAgo + " hours ago.")
     }
 
     return warn
@@ -567,7 +579,6 @@ function timebarReset(st, et) {
     elTimebarStartMarker.classList.remove("isvisible")
     elTimebarEnd.classList.remove("isvisible")
     elTimebarEndMarker.classList.remove("isvisible")
-
 }
 
 
@@ -586,14 +597,14 @@ function requiredMsg(msg, overallmsg) {
 }
 
 
-// This is a custom function
+// This is a custom function for when End time is clicked
 // If you want to display duration somewhere
 // add the code in here with the 'duration' function
 // Settings warning code can be added here too.
-function custom(st, et) {
+function customET(st, et) {
     const elTestP = document.querySelector(".test p")
     let dur = duration(st, et)
-    console.log(dur)
+    // console.log(dur)
 
     if (dur === "0 mins") {
         elTestP.textContent = " "
@@ -602,7 +613,7 @@ function custom(st, et) {
     }
 
     let durationDec = durationDecimal(st, et)
-    let warn = stetWarnings(durationDec)
+    let warn = stetWarnings(durationDec, st)
     if (warn) {
         alert(warn)
     }
