@@ -197,7 +197,16 @@ function timeDecimal(time, hr24, midnightStart) {
 // that the item is selected
 // if nothing is selected, it returns -1
 function listFindSelected(parentUL, selectclass) {
-    return [].findIndex.call(parentUL.childNodes, (cv) => cv.classList.contains(selectclass))
+    // return [].findIndex.call(parentUL.childNodes, (cv) => cv.classList.contains(selectclass))
+    return [].findIndex.call(parentUL.childNodes, (cv) => {
+        if (cv.classList) {
+            if (cv.classList.contains(selectclass)) {
+                return true
+            }
+        } else {
+            return false
+        }
+    })
 }
 
 // Unselects the first item that's selected

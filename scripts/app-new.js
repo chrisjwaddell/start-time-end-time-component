@@ -1,12 +1,4 @@
-function onPageLoad() {
-
-    refreshST(STULQueryString)
-}
-
-
 const elTimeItems = document.querySelector(".time-items")
-
-document.addEventListener("DOMContentLoaded", onPageLoad)
 
 
 let elAdd = document.querySelector(".add")
@@ -16,8 +8,24 @@ elAdd.addEventListener("click", onAdd)
 function onAdd() {
     console.log("onAdd")
 
-    let st = selectedST()
-    let et = selectedET()
+    const elStet = document.querySelectorAll(".stet")
+    let arrStet = Array.from(elStet)
+
+    console.log(stetDOM(arrStet[0]))
+
+    let {
+        id,
+        day,
+        st,
+        et,
+        stUL,
+        etUL
+    } = stetDOM(arrStet[0])
+
+
+    console.log(stetDOM(arrStet[0]))
+
+    debugger
 
     let elP
     if ((st !== "") && (et !== "")) {
@@ -32,10 +40,10 @@ function onAdd() {
     //reset()
     // let dtET = new Date()
 
-    setLastETStored(dateFormat(et))
-    listUnselect(elSTUL, SC)
-    chooseTime(et, STULQueryString)
-    refreshETTime(et)
+    setLastETStored(dateFormat(day, et, settingsSTET.hr24))
+    listUnselect(stUL, SC)
+    chooseTime(et, stUL)
+    refreshETTime(id, day, etUL, st)
 
-    timebar(et, "0")
+    timebar(stUL.childNodes[0], et, "0")
 }
