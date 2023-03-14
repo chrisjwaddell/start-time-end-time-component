@@ -1,23 +1,3 @@
-// ST ul querystring must be put in here
-const STULQueryString = ".start ul"
-const ETULQueryString = ".end ul"
-
-// start-time-end-time settingsSTET
-const settingsSTET = {
-    // if 0, don't warn, if 12, it warns if duration over 12 hours
-    durationOverXHrs: 10,
-    // This helps when chosing a time today rather than yesterday
-    // if 0, warning is off
-    startTimeXHrsBeforeNow: 20,
-    defaultST: "07:00 AM",
-    defaultHrsBeforeToChooseST: 3,
-    // end time can't show times after now
-    excludeAfterNowET: true,
-    nightIsDark: true,
-    hr24: false
-}
-
-
 // selected class (SC) name for items selected in ul list
 const SC = "selected"
 
@@ -33,49 +13,282 @@ const MARKER_WIDTH = 72
 const STARTEND_MARKER_WIDTH = 4
 
 
-let lastET
-let dayChosen = new Date()
-let currentDate = new Date()
+// -------------------------------------------------------------------------------
 
 
-let elDD = document.querySelector(".day h3")
-
-let elSTUL = document.querySelector(STULQueryString)
-let elETUL = document.querySelector(ETULQueryString)
-
-
-const findIndexSelectedST = () => listFindSelected(elSTUL, SC)
-const findIndexSelectedET = () => listFindSelected(elETUL, SC)
-
-const selectedST = () => (findIndexSelectedST() !== -1) ? elSTUL.childNodes[findIndexSelectedST()].textContent : ""
-const selectedET = () => (findIndexSelectedET() !== -1) ? elETUL.childNodes[findIndexSelectedET()].textContent : ""
+// Given start and end elements, it returns the start and end time
+const stValue = (stUL) => (stUL.dataset.starttime) ? stUL.dataset.starttime : ""
+const etValue = (etUL) => (etUL.dataset.endtime) ? etUL.dataset.endtime : ""
+const idValue = (stet) => (stet.dataset.stetId) ? stet.dataset.stetId : ""
+const dayValue = (d) => (d.dataset.day) ? Number(d.dataset.day) : 0
 
 
-function getLastETStored() {
-    if (!lastET) {
-        if (localStorage.getItem("lastET")) {
-            if (Number(localStorage.getItem("lastET")) === "NaN") {
-                setLastETStored(new Date().valueOf())
-            } else {
-                lastET = Number(localStorage.getItem("lastET"))
-            }
+
+
+// -------------------------------------------------------------------------------
+// ^DAY SELECT
+
+function dayLeft(e) {
+    dayChangeEvent(e, -1)
+}
+
+
+function dayRight(e) {
+    dayChangeEvent(e, 1)
+}
+
+
+function dayChangeEvent(e, dayChange) {
+    let elStet = e.target.parentNode.parentNode.parentNode.parentNode
+    let elDay = e.target.parentNode.parentNode.parentNode
+    let day = dayValue(elDay) + dayChange
+    elDay.dataset.day = day
+
+    let stet = stetDOM(elStet)
+    stet.day = day
+
+    stet.elStart.dataset.starttime = ""
+    stet.elEnd.dataset.endtime = ""
+
+    let {
+        lastET,
+        lastETVsNow,
+        hr24
+    } = dateChange(elStet, stet)
+
+    refreshST(stet, lastET, lastETVsNow, hr24)
+}
+
+
+function dateChange(el, stet) {
+    let hr24 = (findSettings(stet.id)) ? (findSettings(stet.id)).hr24 : false
+
+    const elDay = el.children[0]
+
+    let lastET = getLastETStored(stet.id)
+    let lastETVsNow = dayDiff(lastET, now())
+
+    let elHeading = elDay.children[1]
+    elDayLeft = elDay.children[0].children[0].children[0]
+    elDayRight = elDay.children[2].children[0].children[0]
+
+    timebarReset(el)
+    stet.etUL.innerHTML = ""
+
+    if (stet.day === -1) {
+        elHeading.textContent = "Yesterday"
+        elDayLeft.classList.add("isvisible")
+        elDayRight.classList.add("isvisible")
+        if (lastETVsNow === 0) {
+            elDay.classList.add("warning")
         } else {
-            setLastETStored(new Date().valueOf())
+            elDay.classList.remove("warning")
         }
+    } else if (stet.day === 0) {
+        // Today
+        elHeading.textContent = "Today"
+        elDayLeft.classList.add("isvisible")
+        elDayRight.classList.remove("isvisible")
+        if (lastETVsNow === 0) {
+            elDay.classList.remove("warning")
+        } else {
+            elDay.classList.remove("warning")
+        }
+    } else {
+        elHeading.textContent = dateToDMYY(dateChangeDays(now(), Number(stet.day)))
+        elDayLeft.classList.add("isvisible")
+        elDayRight.classList.add("isvisible")
+        if (lastETVsNow === 0) {
+            elDay.classList.add("warning")
+        } else {
+            elDay.classList.remove("warning")
+        }
+    }
+
+    // lastETSelectAndET(id, day, stUL, etUL, lastET, lastETVsNow, hr24)
+
+    return {
+        lastET,
+        lastETVsNow,
+        hr24
     }
 }
 
 
-// takes a number
-function setLastETStored(lastet) {
-    lastET = lastet
-    localStorage.setItem("lastET", String(lastet))
+function timebarReset(el) {
+    const elTimebar = el.children[1].childNodes[1]
+    const elTimebarBar = elTimebar.childNodes[1]
+
+    const elTimebarStart = elTimebar.children[2]
+    const elTimebarStartMarker = elTimebar.children[4]
+
+    const elTimebarEnd = elTimebar.children[3]
+    const elTimebarEndMarker = elTimebar.children[5]
+
+    elTimebarBar.style.width = "0px"
+    elTimebarBar.style.left = "20px"
+
+    elTimebarStart.classList.remove("isvisible")
+    elTimebarStartMarker.classList.remove("isvisible")
+    elTimebarEnd.classList.remove("isvisible")
+    elTimebarEndMarker.classList.remove("isvisible")
 }
 
 
+function timebar(stet, hr24) {
+    // let elTimebar = stet.timebar.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.childNodes[3].childNodes[1]
+    let elTimebar = stet.timebar
+
+    let elTimebarBar = elTimebar.childNodes[1]
+
+    let elTimebarStart = elTimebar.childNodes[5]
+    let elTimebarEnd = elTimebar.childNodes[7]
+
+    let elTimebarStartMarker = elTimebar.childNodes[9]
+    let elTimebarEndMarker = elTimebar.childNodes[11]
+
+    elTimebarBar.style.left = timeDecimal(stet.st, hr24, true) * COMPONENT_WIDTH + "px"
+    elTimebarStart.style.left = timeDecimal(stet.st, hr24, true) * COMPONENT_WIDTH + "px"
+
+
+    if ((stet.st === "0") || (stet.st === "")) {
+        elTimebarStart.classList.remove("isvisible")
+        elTimebarStartMarker.classList.remove("isvisible")
+        elTimebarEnd.classList.remove("isvisible")
+        elTimebarEndMarker.classList.remove("isvisible")
+
+        elTimebarBar.style.width = "0px"
+        elTimebarEnd.style.left = elTimebarStart.style.left
+    } else {
+
+        elTimebarStart.classList.add("isvisible")
+        elTimebarStartMarker.classList.add("isvisible")
+        elTimebarStartMarker.textContent = stet.st
+
+        if (stet.et === "0" || (stet.et === "")) {
+            elTimebarBar.style.width = "20px"
+            elTimebarEnd.style.left = Number.parseInt(elTimebarStart.style.left) + 20 + "px"
+
+            elTimebarEnd.classList.remove("isvisible")
+            elTimebarEndMarker.classList.remove("isvisible")
+        } else {
+
+            if ((stet.st === "0") || (stet.st === "")) {
+                elTimebarStart.classList.remove("isvisible")
+                elTimebarStartMarker.classList.remove("isvisible")
+                elTimebarEnd.classList.remove("isvisible")
+                elTimebarEndMarker.classList.remove("isvisible")
+            } else {
+                elTimebarBar.style.width = durationDecimal(stet.st, stet.et, hr24) * COMPONENT_WIDTH + "px"
+                elTimebarEnd.style.left = Number.parseInt(elTimebarStart.style.left) + (durationDecimal(stet.st, stet.et, hr24) * COMPONENT_WIDTH) + "px"
+                elTimebarEndMarker.textContent = stet.et
+
+                elTimebarStart.classList.add("isvisible")
+                elTimebarStartMarker.classList.add("isvisible")
+                elTimebarEnd.classList.add("isvisible")
+                elTimebarEndMarker.classList.add("isvisible")
+            }
+
+        }
+    }
+
+
+    // start means the timebar 'left' value is 0 to 72 px, the width of the bubble
+    // so the bubble can't appear on the left at all
+    const start = Number.parseInt(elTimebarStart.style.left) < MARKER_WIDTH
+    const end = (Number.parseInt(elTimebarEnd.style.left) > (COMPONENT_WIDTH - MARKER_WIDTH))
+
+    // if (Number.parseInt(elTimebarStartMarker.style.left) + 72) <= (Number.parseInt(elTimebarEndMarker.style.left))
+    let widthOne = false
+    let widthTwo = false
+
+    if (Number.parseInt(elTimebarBar.style.width) > MARKER_WIDTH) {
+        if (Number.parseInt(elTimebarBar.style.width) > (MARKER_WIDTH * 2)) {
+            widthTwo = true
+        } else {
+            widthOne = true
+        }
+    }
+
+    if (widthTwo) {
+        elTimebarStartMarker.style.left = elTimebarStart.style.left
+        elTimebarStartMarker.classList.remove("br")
+        elTimebarStartMarker.classList.remove("rt")
+        elTimebarStartMarker.classList.remove("line")
+        elTimebarStartMarker.classList.add("bl")
+        elTimebarEndMarker.style.left = Number.parseInt(elTimebarEnd.style.left) - MARKER_WIDTH + "px"
+        elTimebarEndMarker.classList.remove("bl")
+        elTimebarEndMarker.classList.remove("lt")
+        elTimebarEndMarker.classList.remove("line")
+        elTimebarEndMarker.classList.add("br")
+    } else {
+        if (start) {
+            elTimebarStartMarker.style.left = elTimebarStart.style.left
+            elTimebarStartMarker.classList.remove("br")
+            elTimebarStartMarker.classList.remove("rt")
+            elTimebarStartMarker.classList.remove("line")
+            elTimebarStartMarker.classList.add("bl")
+            if (widthOne) {
+                elTimebarEndMarker.style.left = elTimebarEnd.style.left
+                elTimebarEndMarker.classList.remove("br")
+                elTimebarEndMarker.classList.remove("lt")
+                elTimebarEndMarker.classList.remove("line")
+                elTimebarEndMarker.classList.add("bl")
+            } else {
+                elTimebarEndMarker.style.left = elTimebarEnd.style.left
+                elTimebarEndMarker.classList.remove("br")
+                elTimebarEndMarker.classList.remove("bl")
+                elTimebarEndMarker.classList.add("lt")
+                elTimebarEndMarker.classList.add("line")
+            }
+        } else {
+            if (end) {
+                elTimebarEndMarker.style.left = Number.parseInt(elTimebarEnd.style.left) - MARKER_WIDTH + "px"
+                elTimebarEndMarker.classList.remove("bl")
+                elTimebarEndMarker.classList.remove("lt")
+                elTimebarEndMarker.classList.remove("line")
+                elTimebarEndMarker.classList.add("br")
+                if (widthOne) {
+                    elTimebarStartMarker.style.left = Number.parseInt(elTimebarStart.style.left) - MARKER_WIDTH + "px"
+                    elTimebarStartMarker.classList.remove("bl")
+                    elTimebarStartMarker.classList.remove("rt")
+                    elTimebarStartMarker.classList.remove("line")
+                    elTimebarStartMarker.classList.add("br")
+                } else {
+                    elTimebarStartMarker.style.left = Number.parseInt(elTimebarStart.style.left) - MARKER_WIDTH + "px"
+                    elTimebarStartMarker.classList.remove("br")
+                    elTimebarStartMarker.classList.remove("bl")
+                    elTimebarStartMarker.classList.add("rt")
+                    elTimebarStartMarker.classList.add("line")
+                }
+            } else {
+                // not start and not end
+                elTimebarStartMarker.style.left = Number.parseInt(elTimebarStart.style.left) - MARKER_WIDTH + "px"
+                elTimebarStartMarker.classList.remove("bl")
+                elTimebarStartMarker.classList.remove("rt")
+                elTimebarStartMarker.classList.remove("line")
+                elTimebarStartMarker.classList.add("br")
+                elTimebarEndMarker.style.left = elTimebarEnd.style.left
+                elTimebarEndMarker.classList.remove("br")
+                elTimebarEndMarker.classList.remove("lt")
+                elTimebarEndMarker.classList.remove("line")
+                elTimebarEndMarker.classList.add("bl")
+            }
+
+        }
+    }
+
+
+}
+
+
+
+// -------------------------------------------------------------------------------
+// ^ST AND ET LISTS
+
 // Populate list based on start time (st) and end time (et)
-function timesPopulate(st, et, ulQueryString, zeroTozero) {
-    let elUL = document.querySelector(ulQueryString)
+function timesPopulate(st, et, ul, zeroTozero, hr24) {
+    let elUL = ul
 
     let result = []
 
@@ -134,7 +347,7 @@ function timesPopulate(st, et, ulQueryString, zeroTozero) {
         arrMins.forEach(min => {
             let elLI = document.createElement("li")
 
-            if (settingsSTET.hr24) {
+            if (hr24) {
                 // 24 hour time
                 elLI.textContent = ((hIndex < 10) ? "0" + hIndex : hIndex) + ":" + min
             } else {
@@ -164,7 +377,6 @@ function timesPopulate(st, et, ulQueryString, zeroTozero) {
             result.push(elLI)
         })
 
-
     }
 
     elUL.innerHTML = ""
@@ -173,69 +385,20 @@ function timesPopulate(st, et, ulQueryString, zeroTozero) {
 }
 
 
-function onSTETPageLoad() {
-    dayChosen = new Date()
-    currentDate = new Date()
-
-    getLastETStored()
-
-    dateChange()
-
-    refreshST(STULQueryString)
+function midnight(list, hr24) {
+    let elLi = document.createElement("li");
+    (hr24) ? elLi.textContent = "00:00": elLi.textContent = "00:00 AM"
+    list.appendChild(elLi)
 }
 
-
-let elDay = document.querySelector(".day")
-
-function dateChange() {
-    let dd = dayDiff(dayChosen, now())
-    let lastETVsNow = dayDiff(lastET, now())
-
-    timebarReset()
-    elETUL.innerHTML = ""
-
-    if (dd === -1) {
-        elDD.textContent = "Yesterday"
-        elDayLeft.classList.add("isvisible")
-        elDayRight.classList.add("isvisible")
-        if (lastETVsNow === 0) {
-            elDay.classList.add("warning")
-        } else {
-            elDay.classList.remove("warning")
-        }
-    } else if (dd === 0) {
-        // Today
-        elDD.textContent = "Today"
-        elDayLeft.classList.add("isvisible")
-        elDayRight.classList.remove("isvisible")
-        if (lastETVsNow === 0) {
-            elDay.classList.remove("warning")
-        } else {
-            elDay.classList.remove("warning")
-        }
-    } else {
-        elDD.textContent = dateToDMYY(dayChosen)
-        elDayLeft.classList.add("isvisible")
-        elDayRight.classList.add("isvisible")
-        if (lastETVsNow === 0) {
-            elDay.classList.add("warning")
-        } else {
-            elDay.classList.remove("warning")
-        }
-    }
-}
-
-
-document.addEventListener("DOMContentLoaded", onSTETPageLoad)
 
 
 // This chooses a time in the list given time text
-// lastET is stored in a variable and in localStorage
 // When a start and end time period is added, the next time period
 // start time is the end time of the previous one
 // this function chooses the start time in the list
-function chooseTime(time, ulQueryString) {
-    let elUL = document.querySelector(ulQueryString)
+function chooseTime(time, ul) {
+    let elUL = ul
 
     let findLiItem = Array.from(elUL.childNodes).findIndex(li => li.textContent === time)
 
@@ -247,7 +410,291 @@ function chooseTime(time, ulQueryString) {
 
         elUL.scrollTo(0, itemTop - ulTop)
     }
+}
 
+
+// Current date chosen (dayChosen variable), it takes time
+// and makes it a date-time value
+function dateFormat(day, time, hr24) {
+    let dayChosen = dateChangeDays(new Date(), day)
+    let hr = timeHourMin(time)
+    let dt = new Date(dayChosen.getFullYear(), dayChosen.getMonth(), dayChosen.getDate(), hr.h, hr.m, 0, 0)
+
+    return dt.valueOf()
+}
+
+
+// This populates Start time list
+// it also chooses the Start time based on the last time
+// that was chosen
+function refreshST(stet, lastET, lastETVsNow, hr24) {
+    let chosenVsLastET = dayDiff(lastET, dateChangeDays(new Date(), stet.day).valueOf())
+
+    let zeroTozero
+    if (now().getHours() > 12) {
+        zeroTozero = true
+    } else {
+        zeroTozero = false
+    }
+
+    if (stet.day === 0) {
+        // Today
+        if (hr24) {
+            timesPopulate("00:00", timehmampm(new Date(lastTimeRounded(now().valueOf())), hr24), stet.stUL, zeroTozero, hr24)
+        } else {
+            timesPopulate("00:00 AM", timehmampm(new Date(lastTimeRounded(now().valueOf())), hr24), stet.stUL, zeroTozero, hr24)
+        }
+
+    } else {
+        if (hr24) {
+            timesPopulate("00:00", "23:45", stet.stUL, false, hr24)
+        } else {
+            timesPopulate("00:00 AM", "11:45 PM", stet.stUL, false, hr24)
+        }
+    }
+
+    stet.stUL.scrollTo(0, 0)
+
+
+    if (chosenVsLastET === 0) {
+        listUnselect(stet.stUL, SC)
+        chooseTime(timehmampm(lastET, hr24), stet.stUL)
+        stet.st = timehmampm(lastET, hr24)
+        stet.elStart.dataset.starttime = stet.st
+
+
+        lastETSelectAndET(stet, hr24)
+    }
+
+}
+
+
+// Find the time after the ST selected, that's what
+// ET list starts with
+function nextTimeSelectedST(stUL) {
+    let selectedIndex = listFindSelected(stUL, SC)
+
+    if (selectedIndex !== -1) {
+        return (stUL.childNodes[selectedIndex + 1]) ? stUL.childNodes[selectedIndex + 1].textContent : ""
+    } else {
+        return ""
+    }
+}
+
+
+function onClickST(e) {
+    if (e.target.textContent) {
+        let elStet = e.target.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode
+
+        let stet = stetDOM(elStet)
+
+        let hr24 = (findSettings(stet.id)) ? (findSettings(stet.id)).hr24 : false
+
+        let st = (e.target.textContent && e.target.classList.contains(SC)) ? e.target.textContent : ""
+        stet.elStart.dataset.starttime = st
+        stet.st = st
+
+        stet.elEnd.dataset.endtime = ""
+        stet.et = ""
+
+        if (st === "" || st === "0") {
+            // If no ST selected, ET list is empty
+            stet.etUL.innerHTML = ""
+            // stet.elEnd.dataset.endtime = st
+        } else {
+            lastETSelectAndET(stet, hr24)
+        }
+
+    }
+}
+
+
+function onClickET(e) {
+    if (e.target.textContent) {
+        const elStet = e.target.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode
+
+        let stet = stetDOM(elStet)
+
+        let et = (e.target.textContent && e.target.classList.contains(SC)) ? e.target.textContent : ""
+        stet.elEnd.dataset.endtime = et
+        stet.et = et
+
+        if (et) {
+            // elTimebarEndMarker.classList.add("isvisible")
+        } else {
+            et = "0"
+            // elTimebarEndMarker.classList.remove("isvisible")
+            stet.etUL.scrollTo(0, 0)
+        }
+
+        let hr24 = (findSettings(stet.id)) ? (findSettings(stet.id)).hr24 : false
+
+        timebar(stet, hr24)
+
+
+    }
+}
+
+
+// When page is refreshed or a new day selected
+// ST is refreshed. It looks to see if lastET
+// is same as day and it selects that and
+// populates ET list
+function lastETSelectAndET(stet, hr24) {
+    let nextST = nextTimeSelectedST(stet.stUL)
+    if (nextST !== "") {
+        // let eletUL = stUL.parentNode.parentNode.parentNode.parentNode.childNodes[3].childNodes[3].childNodes[1].childNodes[1]
+        refreshETTime(stet.id, stet.day, stet.etUL, nextST, hr24)
+
+    } else {
+        stet.etUL.innerHTML = ""
+        if (stet.day !== 0) midnight(stet.etUL, hr24)
+    }
+    timebar(stet, hr24)
+
+}
+
+
+
+
+// -------------------------------------------------------------------------------
+// ^LOCALSTORAGE
+
+// make changes here
+function getLastETStored(id) {
+    let lastET = Number(localStorage.getItem(id))
+
+    if (lastET) {
+        if (Number(lastET) === "NaN") {
+            lastET = lastTimeRounded(new Date().valueOf()).valueOf()
+            setLastETStored(id, lastET)
+        }
+    } else {
+        lastET = lastTimeRounded(new Date().valueOf()).valueOf()
+        setLastETStored(id, lastET)
+    }
+
+    return lastET
+}
+
+
+// takes a number
+function setLastETStored(id, lastet) {
+    localStorage.setItem(id, String(lastet))
+}
+
+
+function refreshETTime(id, day, ul, time, hr24) {
+    let zeroTozero
+    if (now().getHours() > 12) {
+        zeroTozero = true
+    } else {
+        zeroTozero = false
+    }
+
+    if (day === 0) {
+        // Today
+        timesPopulate(time, timehmampm(new Date(lastTimeRounded(now().valueOf() + 100000)), hr24), ul, zeroTozero, hr24)
+    } else {
+        if (hr24) {
+            timesPopulate(time, "23:45", ul, zeroTozero, hr24)
+            // midnight(elETUL, true)
+        } else {
+            timesPopulate(time, "11:45 PM", ul, zeroTozero, hr24)
+        }
+        midnight(ul, hr24)
+    }
+
+    ul.scrollTo(0, 0)
+
+}
+
+
+
+
+// -------------------------------------------------------------------------------
+// ^WARNING AND RESULTS
+
+
+const findSettings = (id) => StetSettings.find(s => s.stetId === id)
+
+
+// it uses StetSettings and generates warnings
+// based on the settings
+// Currently the only setting warnings are:
+// * Star time - x hours before now
+// * duration threshold - if over x hrs, warn me
+function stetWarnings(id, day, st, et) {
+    let settings = findSettings(id) || {}
+
+    let hr24 = settings.hr24 || false
+    let stHoursBeforeNow = settings.startTimeXHrsBeforeNow || 0;
+    let hrsAgo = hoursDiff(now(), dateFormat(day, st, hr24));
+
+    let warn = "";
+    let durationThreshold = settings.durationOverXHrs || 0;
+
+    let durationDec = 0
+    if ((st !== "0") && (st !== "") && (et !== "0") && (et !== "")) {
+        durationDec = durationDecimal(st, et, hr24)
+    }
+
+    if ((durationDec > (durationThreshold / 24)) && (durationThreshold !== 0)) {
+        warn = requiredMsg(warn, "This is over " + durationThreshold + " hours.")
+    }
+
+    if ((stHoursBeforeNow <= hrsAgo) && (stHoursBeforeNow !== 0)) {
+        warn = requiredMsg(warn, "The Start time was " + hrsAgo + " hours ago.")
+    }
+
+    return warn
+}
+
+
+
+// displays duration in decimal
+function durationDecimal(st, et, hr24) {
+    let duration
+    if ((st === "0") || (et === "0") || (st === "") || (et === "")) {
+        duration = 0
+    } else {
+        if (et.slice(0, 5) === "00:00") {
+            duration = (timeDecimal(et, hr24, false) - timeDecimal(st, hr24, true))
+        } else {
+            duration = (timeDecimal(et, hr24, true) - timeDecimal(st, hr24, true))
+        }
+    }
+
+    return duration
+}
+
+
+// Displays duration as a string with 'hours'
+// or 'mins'
+function duration(st, et, hr24) {
+    let dur = durationDecimal(st, et, hr24)
+
+    if (dur < 0.04166) {
+        // if it's less than an hour, use minutes as the duration measure
+        return {
+            durationText: Math.floor(dur * 1440) + " mins",
+            durationDecimal: dur * 24
+        }
+    } else {
+
+        let str = String((dur * 24).toFixed(2))
+
+        if (str.slice(str.length - 3, str.length) === ".00") {
+            str = str.slice(0, str.length - 3)
+        } else if (str.slice(str.length - 3, str.length) === ".50") {
+            str = str.slice(0, str.length - 1)
+        }
+
+        return {
+            durationText: str + " hrs",
+            durationDecimal: dur * 24
+        }
+    }
 }
 
 
@@ -265,370 +712,213 @@ function lastTimeRounded(dt) {
         min
     } = dmyhm(dt)
 
+    let minNew = min
     if (min % 15 !== 0) {
-        return dt + 60000 * (15 - (min % 15))
-    } else {
-        return dt
+        minNew = (min - (min % 15))
     }
 
+    return new Date(y, m, d, hr, minNew)
 }
 
 
+// Run this function in an event
+// refresh means clear the start time and end time lists
+// and refresh the timebar
+function stetResult(id, refresh) {
+    const refr = refresh || false
+    const getStet = (id) => document.querySelector(`.stet[data-stet-id="${id}"]`)
 
-// This populates Start time list
-// it also chooses the Start time based on the last time
-// that was chosen
-function refreshST() {
-    let dd = dayDiff(dayChosen, now())
+    const elStet = getStet(id)
 
-    setLastETStored(lastTimeRounded(lastET))
-
-    let chosenVsLastET = dayDiff(dayChosen, lastET)
-
-    let zeroTozero
-    if (now().getHours() > 12) {
-        zeroTozero = true
-    } else {
-        zeroTozero = false
+    if (!elStet) {
+        console.log(`data-stet-id not found for '${id}'`)
+        return null
     }
 
-    if (dd === 0) {
-        // Today
-        if (settingsSTET.hr24) {
-            timesPopulate("00:00", timehmampm(new Date(lastTimeRounded(now().valueOf())), settingsSTET.hr24), STULQueryString, zeroTozero)
-        } else {
-            timesPopulate("00:00 AM", timehmampm(new Date(lastTimeRounded(now().valueOf())), settingsSTET.hr24), STULQueryString, zeroTozero)
-        }
+    let settings = findSettings(id)
 
-    } else {
-        if (settingsSTET.hr24) {
-            timesPopulate("00:00", "23:45", STULQueryString, false)
-        } else {
-            timesPopulate("00:00 AM", "11:45 PM", STULQueryString, false)
-        }
-
+    if (!settings) {
+        console.log(`StetSettings needs to have a property 'stetId: ${id}'`)
+        return null
     }
 
+    let hr24 = settings.hr24 || false
+    let saveLastETInLocalStorage = (typeof settings.saveLastETInLocalStorage === "undefined") ? true : settings.saveLastETInLocalStorage
 
-    if (chosenVsLastET === 0) {
-        listUnselect(elSTUL, SC)
-        chooseTime(timehmampm(lastET, settingsSTET.hr24), STULQueryString)
-        refreshETTime(timehmampm(lastET, settingsSTET.hr24))
+    let result = {}
+
+    let stet = stetDOM(elStet)
+
+    result.day = stet.day
+    result.st = stet.st
+    result.et = stet.et
+
+    let required = ""
+    if (!stet.st) {
+        required = "Start time not filled in"
+    }
+    if (!stet.et) {
+        required = requiredMsg(required, "End time not filled in")
     }
 
-}
-
-
-elSTUL.addEventListener("click", onListClick)
-elSTUL.addEventListener("click", refreshET2)
-
-
-elETUL.addEventListener("click", onListClick)
-elETUL.addEventListener("click", refreshET)
-
-
-function refreshET() {
-    let elSTValue = document.querySelector(STULQueryString)
-    let st, et, stText, etText
-
-    // let ist = Array.from(elSTValue.childNodes).findIndex(li => Array.from(li.classList).includes("selected"))
-    let ist = findIndexSelectedST()
-    if (ist !== -1) {
-        if (elSTUL.childNodes[ist + 1]) {
-            st = elSTUL.childNodes[ist + 1].textContent
-        } else {
-            st = elSTUL.childNodes[ist].textContent
-        }
-        stText = elSTUL.childNodes[ist].textContent
-    } else {
-        st = "0"
-        stText = "0"
-        elTimebarStartMarker.classList.remove("isvisible")
-        elTimebarEndMarker.classList.remove("isvisible")
-    }
-
-
-    let iet = findIndexSelectedET()
-    if (iet !== -1) {
-        if (elETUL.childNodes[iet + 1]) {
-            et = elETUL.childNodes[iet + 1].textContent
-        } else {
-            et = elETUL.childNodes[iet].textContent
-        }
-        etText = elETUL.childNodes[iet].textContent
-
-        elTimebarEndMarker.classList.add("isvisible")
-
-    } else {
-        et = "0"
-        etText = "0"
-        elTimebarEndMarker.classList.remove("isvisible")
-        elETUL.scrollTo(0, 0)
-    }
-
-
-    timebar(stText, etText)
-    customET(stText, etText)
-
-    return st
-}
-
-
-function refreshET2() {
-    let et = refreshET()
-    refreshETTime(et)
-    let st = selectedST()
-
-    if (st === "") {
-        // If no ST selected, ET list is empty
-        elETUL.innerHTML = ""
-    }
-
-    timebar(st, "0")
-}
-
-
-function refreshETTime(time) {
-    let dd = dayDiff(dayChosen, now())
-
-    let zeroTozero
-    if (now().getHours() > 12) {
-        zeroTozero = true
-    } else {
-        zeroTozero = false
-    }
-
-    if (dd === 0) {
-        // Today
-        timesPopulate(time, timehmampm(new Date(lastTimeRounded(now().valueOf() + 100000)), settingsSTET.hr24), ETULQueryString, zeroTozero)
-    } else {
-        if (settingsSTET.hr24) {
-            timesPopulate(time, "23:45", ETULQueryString, zeroTozero)
-            // midnight(elETUL, true)
-        } else {
-            timesPopulate(time, "11:45 PM", ETULQueryString, zeroTozero)
-        }
-        // THis adds on midnight "00:00" at the end of the list
-        // It only goes on et
-        // It confuses timesPopulate to end at "00:00"
-        // so I add it on seperately
-        midnight(elETUL, settingsSTET.hr24)
-    }
-
-}
-
-
-// This adds on midnight at the end of end time list
-// Start time list can't have this on it's list
-function midnight(list, hr24) {
-    let elLi = document.createElement("li");
-    (hr24) ? elLi.textContent = "00:00": elLi.textContent = "00:00 AM"
-    list.appendChild(elLi)
-}
-
-const elDayLeft = document.querySelector(".triangle--left")
-
-elDayLeft.addEventListener("click", (e) => {
-    dayChosen = dateChangeDays(dayChosen, -1)
-    dateChange()
-    refreshST(STULQueryString)
-})
-
-
-const elDayRight = document.querySelector(".triangle--right")
-
-elDayRight.addEventListener("click", (e) => {
-    dayChosen = dateChangeDays(dayChosen, 1)
-    dateChange()
-    refreshST(STULQueryString)
-})
-
-
-// displays duration in decimal
-function durationDecimal(st, et) {
-    let duration
-    if ((st === "0") || (et === "0")) {
-        duration = 0
-    } else {
-        if (et.slice(0, 5) === "00:00") {
-            duration = (timeDecimal(et, settingsSTET.hr24, false) - timeDecimal(st, settingsSTET.hr24, true))
-        } else {
-            duration = (timeDecimal(et, settingsSTET.hr24, true) - timeDecimal(st, settingsSTET.hr24, true))
-        }
-    }
-
-    return duration
-}
-
-
-// Displays duration as a string with 'hours'
-// or 'mins'
-function duration(st, et) {
-    let dur = durationDecimal(st, et)
-
-    if (dur < 0.04166) {
-        // if it's less than an hour, use minutes as the duration measure
-        return {
-            durationText: Math.floor(dur * 1440) + " mins",
-            durationDecimal: dur
-        }
-    } else {
-        return {
-            durationText: (dur * 24).toFixed(1) + " hrs",
-            durationDecimal: dur
-        }
-    }
-}
-
-
-// it uses settingsSTET and generates warnings
-// based on the settings
-// Currently the only setting warning is
-// duration threshold
-// warning if it's over x hours
-function stetWarnings(duration, st) {
-    let warn = ""
-    let durationThreshold = settingsSTET.durationOverXHrs
-
-    if ((duration > (durationThreshold / 24)) && (durationThreshold !== 0)) {
-        warn = requiredMsg(warn, "This is over " + durationThreshold + " hours.")
-    }
-
-    let stHoursBeforeNow = settingsSTET.startTimeXHrsBeforeNow
-    let hrsAgo = hoursDiff(now(), dateFormat(st))
-
-    if ((stHoursBeforeNow <= hrsAgo) && (stHoursBeforeNow !== 0)) {
-        warn = requiredMsg(warn, "The Start time was " + hrsAgo + " hours ago.")
-    }
-
-    return warn
-}
-
-
-let elTimebarBar = document.querySelector(".day__timebar--bar")
-let elTimebarStart = document.querySelector(".day__timebar-start")
-let elTimebarEnd = document.querySelector(".day__timebar-end")
-let elTimebarStartMarker = document.querySelector(".day__timebar-start-marker")
-let elTimebarEndMarker = document.querySelector(".day__timebar-end-marker")
-
-
-function timebar(st, et) {
-
-    elTimebarBar.style.left = timeDecimal(st, settingsSTET.hr24, true) * COMPONENT_WIDTH + "px"
-    elTimebarStart.style.left = timeDecimal(st, settingsSTET.hr24, true) * COMPONENT_WIDTH + "px"
-
-
-    if ((timeDecimal(st, settingsSTET.hr24, true) * COMPONENT_WIDTH) >= (COMPONENT_WIDTH - MARKER_WIDTH)) {
-        elTimebarStartMarker.style.left = (timeDecimal(st, settingsSTET.hr24, true) * COMPONENT_WIDTH) - MARKER_WIDTH + (STARTEND_MARKER_WIDTH / 2) + "px"
-        elTimebarStartMarker.classList.add("br")
-        elTimebarStartMarker.classList.remove("bl")
-    } else {
-        elTimebarStartMarker.style.left = timeDecimal(st, settingsSTET.hr24, true) * COMPONENT_WIDTH + (STARTEND_MARKER_WIDTH / 2) + "px"
-        elTimebarStartMarker.classList.add("bl")
-        elTimebarStartMarker.classList.remove("br")
-    }
-
-    if ((st === "0") || (st === "")) {
-        elTimebarStart.classList.remove("isvisible")
-        elTimebarStartMarker.classList.remove("isvisible")
-        elTimebarEnd.classList.remove("isvisible")
-        elTimebarEndMarker.classList.remove("isvisible")
-
-        elTimebarBar.style.width = "0px"
-        elTimebarEnd.style.left = elTimebarStart.style.left
-    } else {
-
-        elTimebarStart.classList.add("isvisible")
-        elTimebarStartMarker.classList.add("isvisible")
-        elTimebarStartMarker.textContent = st
-
-        if (et === "0") {
-            elTimebarBar.style.width = "20px"
-            elTimebarEnd.style.left = Number.parseInt(elTimebarStart.style.left) + 20 + "px"
-
-            elTimebarEnd.classList.remove("isvisible")
-            elTimebarEndMarker.classList.remove("isvisible")
-        } else {
-
-            if ((st === "0") || (st === "")) {
-                elTimebarStart.classList.remove("isvisible")
-                elTimebarStartMarker.classList.remove("isvisible")
-                elTimebarEnd.classList.remove("isvisible")
-                elTimebarEndMarker.classList.remove("isvisible")
-            } else {
-                // elTimebarBar.style.width = ((timeDecimal(et, settingsSTET.hr24, true) - timeDecimal(st, settingsSTET.hr24, true))) * COMPONENT_WIDTH + "px"
-                elTimebarBar.style.width = durationDecimal(st, et) * COMPONENT_WIDTH + "px"
-                elTimebarEnd.style.left = Number.parseInt(elTimebarStart.style.left) + (durationDecimal(st, et) * COMPONENT_WIDTH) + "px"
-                elTimebarEndMarker.textContent = et
-
-                elTimebarStart.classList.add("isvisible")
-                elTimebarStartMarker.classList.add("isvisible")
-                elTimebarEnd.classList.add("isvisible")
-                elTimebarEndMarker.classList.add("isvisible")
-            }
-
-        }
-    }
-
-    if ((timeDecimal(et, settingsSTET.hr24, true) * COMPONENT_WIDTH) >= (COMPONENT_WIDTH - MARKER_WIDTH)) {
-        elTimebarEndMarker.style.left = (timeDecimal(et, settingsSTET.hr24, true) * COMPONENT_WIDTH) - MARKER_WIDTH + (STARTEND_MARKER_WIDTH / 2) + "px"
-        elTimebarEndMarker.classList.add("tr")
-        elTimebarEndMarker.classList.remove("tl")
-    } else {
-        elTimebarEndMarker.style.left = (timeDecimal(et, settingsSTET.hr24, true) * COMPONENT_WIDTH) + (STARTEND_MARKER_WIDTH / 2) + "px"
-        elTimebarEndMarker.classList.add("tl")
-        elTimebarEndMarker.classList.remove("tr")
-    }
-
-}
-
-
-function timebarReset(st, et) {
-    elTimebarBar.style.width = "0px"
-    elTimebarBar.style.left = "20px"
-
-    elTimebarStart.classList.remove("isvisible")
-    elTimebarStartMarker.classList.remove("isvisible")
-    elTimebarEnd.classList.remove("isvisible")
-    elTimebarEndMarker.classList.remove("isvisible")
-}
-
-
-// Current date chosen (dayChosen variable), it takes time
-// and makes it a date-time value
-function dateFormat(time, hr24) {
-    let hr = timeHourMin(time)
-    let dt = new Date(dayChosen.getFullYear(), dayChosen.getMonth(), dayChosen.getDate(), hr.h, hr.m, 0, 0)
-
-    return dt.valueOf()
-}
-
-
-function requiredMsg(msg, overallmsg) {
-    return overallmsg = overallmsg === '' ? msg : overallmsg + "\n" + msg
-}
-
-
-// This is a custom function for when End time is clicked
-// If you want to display duration somewhere
-// add the code in here with the 'duration' function
-// Settings warning code can be added here too.
-function customET(st, et) {
-    const elTestP = document.querySelector(".test p")
+    let stFilledIn = Boolean(stet.st)
+    let etFilledIn = Boolean(stet.et)
+
+    result.required = required
+    result.stFilledIn = stFilledIn
+    result.etFilledIn = etFilledIn
+    result.stetFilledIn = stFilledIn && etFilledIn
     let {
-        durationText
-    } = duration(st, et)
-    // console.log(dur)
+        durationText,
+        durationDecimal
+    } = duration(stet.st, stet.et, hr24)
+    result.durationText = durationText || ""
+    result.durationDecimal = durationDecimal || 0
 
-    if (durationText === "0 mins") {
-        elTestP.textContent = " "
-    } else {
-        elTestP.textContent = durationText
+    let stt = stet.st ? stet.st : "0"
+    let ett = stet.et ? stet.et : "0"
+
+
+    let w = stetWarnings(stet.id, stet.day, stt, ett)
+    result.warnings = w
+
+    if (saveLastETInLocalStorage) setLastETStored(id, lastTimeRounded(dateFormat(result.day, ett, hr24)).valueOf())
+
+    if (refr) {
+        if (result.stetFilledIn) {
+            listUnselect(stet.stUL, SC)
+            listUnselect(stet.etUL, SC)
+
+
+            chooseTime(stet.et, stet.stUL)
+            // result.st = stet.et
+            // elStet.dataset.starttime = result.et
+            stet.elStart.dataset.starttime = result.et
+            stet.st = result.et
+
+
+            // result.et = ""
+            // elStet.dataset.endtime = ""
+            stet.elEnd.dataset.endtime = ""
+            stet.et = ""
+
+            // timebar(stUL.childNodes[0], et, "0", hr24)
+            // refreshETTime(id, stet.day, stet.etUL, stet.st, hr24)
+            lastETSelectAndET(stet, hr24)
+
+            timebarReset(elStet)
+            timebar(stet, hr24)
+        }
     }
 
-    let durationDec = durationDecimal(st, et)
-    let warn = stetWarnings(durationDec, st)
-    if (warn) {
-        alert(warn)
+    return result
+}
+
+
+// -------------------------------------------------------------------------------
+
+
+
+// All Start date end date items, populate Start date list
+// and add events
+function onSTETPageLoad() {
+    let elStet = document.querySelectorAll(".stet")
+    let arrStet = Array.from(elStet)
+
+    arrStet.forEach(stet => {
+        let stetObj = stetDOM(stet)
+
+        stetClickEvents(stet)
+
+        let {
+            lastET,
+            lastETVsNow,
+            hr24
+        } = dateChange(stet, stetObj)
+
+        // dateChange(stet, stetObj)
+
+        refreshST(stetObj, lastET, lastETVsNow, hr24)
+    })
+
+
+    function stetClickEvents(el) {
+        el.querySelector(".start ul").addEventListener("click", onListClick)
+        el.querySelector(".start ul").addEventListener("click", onClickST)
+
+        el.querySelector(".end ul").addEventListener("click", onListClick)
+        el.querySelector(".end ul").addEventListener("click", onClickET)
+
+
+        el.querySelector(".triangle--left").addEventListener("click", dayLeft)
+        el.querySelector(".triangle--right").addEventListener("click", dayRight)
+
     }
+
+}
+
+
+document.addEventListener("DOMContentLoaded", onSTETPageLoad)
+
+
+// Refresh every 10 mins
+setTimeout(() => {
+    let elStet = document.querySelectorAll(".stet")
+    let arrStet = Array.from(elStet)
+
+    arrStet.forEach(stet => {
+        let stetObj = stetDOM(stet)
+
+        let lastET = getLastETStored(stet.id)
+        let lastETVsNow = dayDiff(lastET, now())
+        let hr24 = (findSettings(stet.id)) ? (findSettings(stet.id)).hr24 : false
+
+
+
+        if ((stetObj.day === 0) && (lastET)) {
+            refreshST(stetObj, lastET, lastETVsNow, hr24)
+
+            let zeroTozero
+            if (now().getHours() > 12) {
+                zeroTozero = true
+            } else {
+                zeroTozero = false
+            }
+            // Refresh End time list
+            timesPopulate(timehmampm(lastET, hr24), timehmampm(new Date(lastTimeRounded(now().valueOf() + 100000)), hr24), stetObj.etUL, zeroTozero, hr24)
+            stetObj.etUL.scrollTo(0, 0)
+        }
+    })
+
+}, 1000 * 60 * 10);
+
+
+// Takes a DOM tree structure that has a 'stet' class
+// and finds the start an end elements, the start and
+// end lists, start value, end value, day value and timebar
+// element
+function stetDOM(stet) {
+    // console.log(stet)
+    let id = idValue(stet)
+    let timebar = stet.childNodes[3].childNodes[1]
+    let day = dayValue(stet.childNodes[1])
+    let elStart = stet.childNodes[5].childNodes[1]
+    let elEnd = stet.childNodes[5].childNodes[3]
+    let st = stValue(stet.childNodes[5].childNodes[1])
+    let et = etValue(stet.childNodes[5].childNodes[3])
+    let elstUL = stet.childNodes[5].childNodes[1].childNodes[3].childNodes[1].childNodes[1]
+    let eletUL = stet.childNodes[5].childNodes[3].childNodes[3].childNodes[1].childNodes[1]
+
+    return {
+        id,
+        timebar,
+        day,
+        elStart,
+        elEnd,
+        st,
+        et,
+        stUL: elstUL,
+        etUL: eletUL
+    }
+
 }
