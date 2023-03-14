@@ -1,20 +1,30 @@
 const StetSettings = [{
-    stetId: "times",
-    durationOverXHrs: 10,
-    startTimeXHrsBeforeNow: 20,
-    saveLastETInLocalStorage: true,
-    hr24: false
-}]
+        stetId: "task1",
+        durationOverXHrs: 10,
+        startTimeXHrsBeforeNow: 10,
+        saveLastETInLocalStorage: true,
+        hr24: false
+    },
+
+    {
+        stetId: "task2",
+        durationOverXHrs: 10,
+        startTimeXHrsBeforeNow: 10,
+        saveLastETInLocalStorage: true,
+        hr24: true
+    }
+
+]
 
 
-const elTimeItems = document.querySelector(".time-items")
+const elTimeItems1 = document.querySelector(".time-items1")
+
+let elAdd1 = document.querySelector(".add1")
+
+let elTest1P = document.querySelector(".test1 p")
 
 
-let elAdd = document.querySelector(".add")
-elAdd.addEventListener("click", onAdd)
-
-
-function onAdd() {
+function onAdd1() {
 
     const timesSettings = {
         durationOverXHrs: 10,
@@ -22,26 +32,99 @@ function onAdd() {
         hr24: false
     }
 
-    let result = stetResult("times", true)
+    let result = stetResult("task1", true)
     console.log(result)
 
-
+    if (!result) return
 
     let elP
     if (result.stetFilledIn) {
         elP = document.createElement("p")
         elP.textContent = result.st + " - " + result.et
 
-        elTimeItems.appendChild(elP)
+        elTimeItems1.appendChild(elP)
+        elTest1P.textContent = ""
+    } else {
+        alert(result.required)
+    }
+}
+
+
+function resultMessage(result) {
+    if (result.stetFilledIn) {
+        return result.durationText + '\n' + result.warnings
+    } else {
+        return result.warnings
+    }
+}
+
+
+function start1() {
+    let result = stetResult("task1", false)
+    elTest1P.textContent = resultMessage(result)
+}
+
+function end1() {
+    let result = stetResult("task1", false)
+    elTest1P.textContent = resultMessage(result)
+}
+
+
+const elTimeItems2 = document.querySelector(".time-items2")
+
+let elAdd2 = document.querySelector(".add2")
+
+let elTest2P = document.querySelector(".test2 p")
+
+
+function onAdd2() {
+
+    const timesSettings = {
+        durationOverXHrs: 10,
+        startTimeXHrsBeforeNow: 20,
+        hr24: false
+    }
+
+    let result = stetResult("task2", true)
+
+    if (!result) return
+
+    console.log(result)
+
+    let elP
+    if (result.stetFilledIn) {
+        elP = document.createElement("p")
+        elP.textContent = result.st + " - " + result.et
+
+        elTimeItems2.appendChild(elP)
+        elTest2P.textContent = ""
     } else {
         alert(result.required)
     }
 
-
-
-    // listUnselect(stUL, SC)
-    // refreshETTime(id, day, etUL, st)
-    // chooseTime(et, stUL)
-
-    // timebar(stUL.childNodes[0], et, "0")
 }
+
+
+function start2() {
+    let result = stetResult("task2", false)
+    console.log(result)
+    elTest2P.textContent = resultMessage(result)
+}
+
+function end2() {
+    let result = stetResult("task2", false)
+    console.log(result)
+    elTest2P.textContent = resultMessage(result)
+}
+
+
+document.addEventListener("DOMContentLoaded", (e) => {
+    elAdd1.addEventListener("click", onAdd1)
+    elAdd2.addEventListener("click", onAdd2)
+
+    document.querySelectorAll(".stet")[0].querySelector(".start ul").addEventListener("click", start1)
+    document.querySelectorAll(".stet")[0].querySelector(".end ul").addEventListener("click", end1)
+
+    document.querySelectorAll(".stet")[1].querySelector(".start ul").addEventListener("click", start2)
+    document.querySelectorAll(".stet")[1].querySelector(".end ul").addEventListener("click", end2)
+})

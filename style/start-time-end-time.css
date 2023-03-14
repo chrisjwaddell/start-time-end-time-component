@@ -1,5 +1,6 @@
 .times {
     width: 325px;
+    max-width: 325px;
     margin: 0 auto;
 }
 
@@ -64,8 +65,8 @@
 .day h3 {
     display: inline-block;
     width: 200px;
-    font-size: 2rem;
-    line-height: 1.5;
+    font-size: 1.6rem;
+    line-height: 1.2;
     font-weight: 600;
 }
 

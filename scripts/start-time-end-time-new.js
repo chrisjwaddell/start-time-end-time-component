@@ -61,7 +61,7 @@ function dayChangeEvent(e, dayChange) {
 
 
 function dateChange(el, stet) {
-    let hr24 = findSettings(stet.id).hr24 || false
+    let hr24 = (findSettings(stet.id)) ? (findSettings(stet.id)).hr24 : false
 
     const elDay = el.children[0]
 
@@ -165,7 +165,7 @@ function timebar(stet, hr24) {
         elTimebarStartMarker.classList.add("isvisible")
         elTimebarStartMarker.textContent = stet.st
 
-        if (stet.et === "0") {
+        if (stet.et === "0" || (stet.et === "")) {
             elTimebarBar.style.width = "20px"
             elTimebarEnd.style.left = Number.parseInt(elTimebarStart.style.left) + 20 + "px"
 
@@ -428,8 +428,6 @@ function dateFormat(day, time, hr24) {
 // it also chooses the Start time based on the last time
 // that was chosen
 function refreshST(stet, lastET, lastETVsNow, hr24) {
-    // let lastET = getLastETStored(id)
-
     let chosenVsLastET = dayDiff(lastET, dateChangeDays(new Date(), stet.day).valueOf())
 
     let zeroTozero
@@ -461,9 +459,13 @@ function refreshST(stet, lastET, lastETVsNow, hr24) {
     if (chosenVsLastET === 0) {
         listUnselect(stet.stUL, SC)
         chooseTime(timehmampm(lastET, hr24), stet.stUL)
+        stet.st = timehmampm(lastET, hr24)
+        stet.elStart.dataset.starttime = stet.st
+
 
         lastETSelectAndET(stet, hr24)
     }
+
 }
 
 
@@ -473,7 +475,7 @@ function nextTimeSelectedST(stUL) {
     let selectedIndex = listFindSelected(stUL, SC)
 
     if (selectedIndex !== -1) {
-        return (stUL.childNodes[selectedIndex + 1].textContent) ? stUL.childNodes[selectedIndex + 1].textContent : ""
+        return (stUL.childNodes[selectedIndex + 1]) ? stUL.childNodes[selectedIndex + 1].textContent : ""
     } else {
         return ""
     }
@@ -486,15 +488,19 @@ function onClickST(e) {
 
         let stet = stetDOM(elStet)
 
-        let hr24 = findSettings(stet.id).hr24 || false
+        let hr24 = (findSettings(stet.id)) ? (findSettings(stet.id)).hr24 : false
 
         let st = (e.target.textContent && e.target.classList.contains(SC)) ? e.target.textContent : ""
-        elStart.dataset.starttime = st
+        stet.elStart.dataset.starttime = st
+        stet.st = st
 
-        if (st === "") {
+        stet.elEnd.dataset.endtime = ""
+        stet.et = ""
+
+        if (st === "" || st === "0") {
             // If no ST selected, ET list is empty
-            etUL.innerHTML = ""
-            elEnd.dataset.endtime = st
+            stet.etUL.innerHTML = ""
+            // stet.elEnd.dataset.endtime = st
         } else {
             lastETSelectAndET(stet, hr24)
         }
@@ -510,19 +516,22 @@ function onClickET(e) {
         let stet = stetDOM(elStet)
 
         let et = (e.target.textContent && e.target.classList.contains(SC)) ? e.target.textContent : ""
-        elEnd.dataset.endtime = et
+        stet.elEnd.dataset.endtime = et
+        stet.et = et
 
         if (et) {
             // elTimebarEndMarker.classList.add("isvisible")
         } else {
             et = "0"
             // elTimebarEndMarker.classList.remove("isvisible")
-            etUL.scrollTo(0, 0)
+            stet.etUL.scrollTo(0, 0)
         }
 
-        let hr24 = findSettings(id).hr24 || false
+        let hr24 = (findSettings(stet.id)) ? (findSettings(stet.id)).hr24 : false
 
         timebar(stet, hr24)
+
+
     }
 }
 
@@ -536,10 +545,12 @@ function lastETSelectAndET(stet, hr24) {
     if (nextST !== "") {
         // let eletUL = stUL.parentNode.parentNode.parentNode.parentNode.childNodes[3].childNodes[3].childNodes[1].childNodes[1]
         refreshETTime(stet.id, stet.day, stet.etUL, nextST, hr24)
-        debugger
 
-        timebar(stet, hr24)
+    } else {
+        stet.etUL.innerHTML = ""
+        if (stet.day !== 0) midnight(stet.etUL, hr24)
     }
+    timebar(stet, hr24)
 
 }
 
@@ -548,9 +559,6 @@ function lastETSelectAndET(stet, hr24) {
 
 // -------------------------------------------------------------------------------
 // ^LOCALSTORAGE
-
-let lastET
-
 
 // make changes here
 function getLastETStored(id) {
@@ -622,7 +630,6 @@ function stetWarnings(id, day, st, et) {
     let hr24 = settings.hr24 || false
     let stHoursBeforeNow = settings.startTimeXHrsBeforeNow || 0;
     let hrsAgo = hoursDiff(now(), dateFormat(day, st, hr24));
-    console.log(settings)
 
     let warn = "";
     let durationThreshold = settings.durationOverXHrs || 0;
@@ -676,15 +683,12 @@ function duration(st, et, hr24) {
     } else {
 
         let str = String((dur * 24).toFixed(2))
-        console.log(str.length)
-        console.log(str.slice().length)
+
         if (str.slice(str.length - 3, str.length) === ".00") {
             str = str.slice(0, str.length - 3)
         } else if (str.slice(str.length - 3, str.length) === ".50") {
             str = str.slice(0, str.length - 1)
         }
-
-        console.log(str)
 
         return {
             durationText: str + " hrs",
@@ -724,36 +728,42 @@ function lastTimeRounded(dt) {
 function stetResult(id, refresh) {
     const refr = refresh || false
     const getStet = (id) => document.querySelector(`.stet[data-stet-id="${id}"]`)
+
     const elStet = getStet(id)
+
+    if (!elStet) {
+        console.log(`data-stet-id not found for '${id}'`)
+        return null
+    }
+
     let settings = findSettings(id)
+
+    if (!settings) {
+        console.log(`StetSettings needs to have a property 'stetId: ${id}'`)
+        return null
+    }
+
     let hr24 = settings.hr24 || false
-    let saveLastETInLocalStorage = settings.saveLastETInLocalStorage || true
-    console.log(elStet)
+    let saveLastETInLocalStorage = (typeof settings.saveLastETInLocalStorage === "undefined") ? true : settings.saveLastETInLocalStorage
 
     let result = {}
 
-    let {
-        day,
-        st,
-        et,
-        stUL,
-        etUL
-    } = stetDOM(elStet)
+    let stet = stetDOM(elStet)
 
-    result.day = day
-    result.st = st
-    result.et = et
+    result.day = stet.day
+    result.st = stet.st
+    result.et = stet.et
 
     let required = ""
-    if (!st) {
+    if (!stet.st) {
         required = "Start time not filled in"
     }
-    if (!et) {
+    if (!stet.et) {
         required = requiredMsg(required, "End time not filled in")
     }
 
-    let stFilledIn = Boolean(st)
-    let etFilledIn = Boolean(et)
+    let stFilledIn = Boolean(stet.st)
+    let etFilledIn = Boolean(stet.et)
 
     result.required = required
     result.stFilledIn = stFilledIn
@@ -762,29 +772,44 @@ function stetResult(id, refresh) {
     let {
         durationText,
         durationDecimal
-    } = duration(st, et, hr24)
+    } = duration(stet.st, stet.et, hr24)
     result.durationText = durationText || ""
     result.durationDecimal = durationDecimal || 0
 
-    let stt = st ? st : "0"
-    let ett = et ? et : "0"
+    let stt = stet.st ? stet.st : "0"
+    let ett = stet.et ? stet.et : "0"
 
 
-    let w = stetWarnings(id, day, stt, ett)
-    console.log(w)
+    let w = stetWarnings(stet.id, stet.day, stt, ett)
     result.warnings = w
 
     if (saveLastETInLocalStorage) setLastETStored(id, lastTimeRounded(dateFormat(result.day, ett, hr24)).valueOf())
 
     if (refr) {
-        listUnselect(stUL, SC)
-        listUnselect(etUL, SC)
+        if (result.stetFilledIn) {
+            listUnselect(stet.stUL, SC)
+            listUnselect(stet.etUL, SC)
 
-        timebarReset(elStet)
 
-        chooseTime(et, stUL)
-        // timebar(stUL.childNodes[0], et, "0", hr24)
-        refreshETTime(id, day, etUL, st, hr24)
+            chooseTime(stet.et, stet.stUL)
+            // result.st = stet.et
+            // elStet.dataset.starttime = result.et
+            stet.elStart.dataset.starttime = result.et
+            stet.st = result.et
+
+
+            // result.et = ""
+            // elStet.dataset.endtime = ""
+            stet.elEnd.dataset.endtime = ""
+            stet.et = ""
+
+            // timebar(stUL.childNodes[0], et, "0", hr24)
+            // refreshETTime(id, stet.day, stet.etUL, stet.st, hr24)
+            lastETSelectAndET(stet, hr24)
+
+            timebarReset(elStet)
+            timebar(stet, hr24)
+        }
     }
 
     return result
@@ -805,7 +830,6 @@ function onSTETPageLoad() {
         let stetObj = stetDOM(stet)
 
         stetClickEvents(stet)
-
 
         let {
             lastET,
@@ -838,8 +862,42 @@ function onSTETPageLoad() {
 document.addEventListener("DOMContentLoaded", onSTETPageLoad)
 
 
+// Refresh every 1 mins
+setTimeout(() => {
+    let elStet = document.querySelectorAll(".stet")
+    let arrStet = Array.from(elStet)
+
+    arrStet.forEach(stet => {
+        let stetObj = stetDOM(stet)
+
+        let lastET = getLastETStored(stet.id)
+        let lastETVsNow = dayDiff(lastET, now())
+        let hr24 = (findSettings(stet.id)) ? (findSettings(stet.id)).hr24 : false
 
 
+
+        if ((stetObj.day === 0) && (lastET)) {
+            refreshST(stetObj, lastET, lastETVsNow, hr24)
+
+            let zeroTozero
+            if (now().getHours() > 12) {
+                zeroTozero = true
+            } else {
+                zeroTozero = false
+            }
+            // Refresh End time list
+            timesPopulate(timehmampm(lastET, hr24), timehmampm(new Date(lastTimeRounded(now().valueOf() + 100000)), hr24), stetObj.etUL, zeroTozero, hr24)
+            stetObj.etUL.scrollTo(0, 0)
+        }
+    })
+
+}, 1000 * 10);
+
+
+// Takes a DOM tree structure that has a 'stet' class
+// and finds the start an end elements, the start and
+// end lists, start value, end value, day value and timebar
+// element
 function stetDOM(stet) {
     // console.log(stet)
     let id = idValue(stet)
