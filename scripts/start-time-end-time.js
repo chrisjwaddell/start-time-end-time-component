@@ -62,12 +62,14 @@ function dayChangeEvent(e, dayChange) {
 
 function dateChange(el, stet) {
     let settings = findSettings(stet.id) || {}
+    let saveLastETInLocalStorage = settings.saveLastETInLocalStorage === false ? false : true
     let hr24 = (settings.hr24) || false
 
     const elDay = el.children[0]
 
-    let lastET = getLastETStored(stet.id)
-    let lastETVsNow = dayDiff(lastET, now().valueOf())
+
+    let lastET = (saveLastETInLocalStorage) ? getLastETStored(stet.id) : null
+    let lastETVsNow = (lastET) ? dayDiff(lastET, now().valueOf()) : null
 
     let elHeading = elDay.children[1]
     elDayLeft = elDay.children[0].children[0].children[0]
@@ -80,29 +82,35 @@ function dateChange(el, stet) {
         elHeading.textContent = "Yesterday"
         elDayLeft.classList.add("isvisible")
         elDayRight.classList.add("isvisible")
-        if (lastETVsNow === 0) {
-            elDay.classList.add("warning")
-        } else {
-            elDay.classList.remove("warning")
+        if (lastET) {
+            if (lastETVsNow === 0) {
+                elDay.classList.add("warning")
+            } else {
+                elDay.classList.remove("warning")
+            }
         }
     } else if (stet.day === 0) {
         // Today
         elHeading.textContent = "Today"
         elDayLeft.classList.add("isvisible")
         elDayRight.classList.remove("isvisible")
-        if (lastETVsNow === 0) {
-            elDay.classList.remove("warning")
-        } else {
-            elDay.classList.remove("warning")
+        if (lastET) {
+            if (lastETVsNow === 0) {
+                elDay.classList.remove("warning")
+            } else {
+                elDay.classList.remove("warning")
+            }
         }
     } else {
         elHeading.textContent = dateToDMYY(dateChangeDays(now().valueOf(), Number(stet.day)))
         elDayLeft.classList.add("isvisible")
         elDayRight.classList.add("isvisible")
-        if (lastETVsNow === 0) {
-            elDay.classList.add("warning")
-        } else {
-            elDay.classList.remove("warning")
+        if (lastET) {
+            if (lastETVsNow === 0) {
+                elDay.classList.add("warning")
+            } else {
+                elDay.classList.remove("warning")
+            }
         }
     }
 
@@ -432,8 +440,6 @@ function dateFormat(day, time, hr24) {
 // it also chooses the Start time based on the last time
 // that was chosen
 function refreshST(stet, lastET, lastETVsNow, hr24) {
-    let chosenVsLastET = dayDiff(lastET, dateChangeDays(new Date(), stet.day).valueOf())
-
     let zeroTozero
     if (now().getHours() > 12) {
         zeroTozero = true
@@ -459,16 +465,20 @@ function refreshST(stet, lastET, lastETVsNow, hr24) {
 
     stet.stUL.scrollTo(0, 0)
 
+    listUnselect(stet.stUL, SC)
 
-    if (chosenVsLastET === 0) {
-        listUnselect(stet.stUL, SC)
-        chooseTime(timehmampm(lastET, hr24), stet.stUL)
-        stet.st = timehmampm(lastET, hr24)
-        stet.elStart.dataset.starttime = stet.st
+    if (lastET) {
+        let chosenVsLastET = dayDiff(lastET, dateChangeDays(new Date(), stet.day).valueOf())
 
+        if (chosenVsLastET === 0) {
+            chooseTime(timehmampm(lastET, hr24), stet.stUL)
+            stet.st = timehmampm(lastET, hr24)
+            stet.elStart.dataset.starttime = stet.st
 
-        lastETSelectAndET(stet, hr24)
+            lastETSelectAndET(stet, hr24)
+        }
     }
+
 
 }
 
@@ -569,6 +579,8 @@ function lastETSelectAndET(stet, hr24) {
 
 // make changes here
 function getLastETStored(id) {
+    if (typeof localStorage == 'undefined') return null
+
     let lastET = Number(localStorage.getItem(id))
 
     if (lastET) {
@@ -587,7 +599,8 @@ function getLastETStored(id) {
 
 // takes a number
 function setLastETStored(id, lastet) {
-    localStorage.setItem(id, String(lastet))
+    if (typeof localStorage !== 'undefined')
+        localStorage.setItem(id, String(lastet))
 }
 
 
@@ -728,7 +741,9 @@ function lastTimeRounded(dt) {
 }
 
 
-// Run this function in an event
+// This function returns an object with the st, et, duration
+// warning message, required message
+// Run this function in an Add event
 // refresh means clear the start time and end time lists
 // and refresh the timebar
 function stetResult(id, refresh) {
@@ -750,8 +765,7 @@ function stetResult(id, refresh) {
     }
 
     let hr24 = settings.hr24 || false
-    // let saveLastETInLocalStorage = (typeof settings.saveLastETInLocalStorage === "undefined") ? true : settings.saveLastETInLocalStorage
-    let saveLastETInLocalStorage = (settings.saveLastETInLocalStorage) || true
+    let saveLastETInLocalStorage = settings.saveLastETInLocalStorage === false ? false : true
 
 
     let result = {}
@@ -878,14 +892,17 @@ setTimeout(() => {
     arrStet.forEach(stet => {
         let stetObj = stetDOM(stet)
 
-        let lastET = getLastETStored(stet.id)
-        let lastETVsNow = dayDiff(lastET, now().valueOf())
         let settings = findSettings(stet.id) || {}
+        let saveLastETInLocalStorage = settings.saveLastETInLocalStorage === false ? false : true
+        let lastET = (saveLastETInLocalStorage) ? getLastETStored(stet.id) : null
+        let lastETVsNow = (lastET) ? dayDiff(lastET, now().valueOf()) : null
         let hr24 = (settings.hr24) || false
 
+        refreshST(stetObj, lastET, lastETVsNow, hr24)
+
+        stetObj.etUL.scrollTo(0, 0)
 
         if ((stetObj.day === 0) && (lastET)) {
-            refreshST(stetObj, lastET, lastETVsNow, hr24)
 
             let zeroTozero
             if (now().getHours() > 12) {
@@ -895,7 +912,6 @@ setTimeout(() => {
             }
             // Refresh End time list
             timesPopulate(timehmampm(lastET, hr24), timehmampm(new Date(lastTimeRounded(now().valueOf() + 100000)), hr24), stetObj.etUL, zeroTozero, hr24)
-            stetObj.etUL.scrollTo(0, 0)
         }
     })
 

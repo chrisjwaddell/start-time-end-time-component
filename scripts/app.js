@@ -2,7 +2,7 @@ const StetSettings = [{
     stetId: "task1",
     durationOverXHrs: 10,
     startTimeXHrsBeforeNow: 10,
-    saveLastETInLocalStorage: true,
+    saveLastETInLocalStorage: false,
     hr24: false
 }]
 
