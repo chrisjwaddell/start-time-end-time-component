@@ -885,7 +885,7 @@ document.addEventListener("DOMContentLoaded", onSTETPageLoad)
 
 
 // Refresh every 10 mins
-setTimeout(() => {
+function refreshList() {
     let elStet = document.querySelectorAll(".stet")
     let arrStet = Array.from(elStet)
 
@@ -915,7 +915,10 @@ setTimeout(() => {
         }
     })
 
-}, 1000 * 60 * 10);
+    setTimeout(() => refreshList(), 1000 * 60 * 10)
+}
+
+setTimeout(() => refreshList(), 1000 * 60 * 10);
 
 
 // Takes a DOM tree structure that has a 'stet' class
