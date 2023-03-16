@@ -1,20 +1,10 @@
 const StetSettings = [{
-        stetId: "task1",
-        durationOverXHrs: 10,
-        startTimeXHrsBeforeNow: 10,
-        saveLastETInLocalStorage: true,
-        hr24: false
-    },
-
-    {
-        stetId: "task2",
-        durationOverXHrs: 10,
-        startTimeXHrsBeforeNow: 10,
-        saveLastETInLocalStorage: true,
-        hr24: true
-    }
-
-]
+    stetId: "task1",
+    durationOverXHrs: 10,
+    startTimeXHrsBeforeNow: 10,
+    saveLastETInLocalStorage: true,
+    hr24: false
+}]
 
 
 const elTimeItems1 = document.querySelector(".time-items1")

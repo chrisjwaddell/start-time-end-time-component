@@ -55,12 +55,6 @@ function dayDiff(dt1, dt2) {
 }
 
 
-function hoursDiff(dt1, dt2) {
-    const HOUR = 1000 * 60 * 60;
-    return Math.floor((dt1 - dt2) / HOUR)
-}
-
-
 // Go forward or back x days
 function dateChangeDays(dt, days) {
     let d = new Date(dt);
@@ -103,7 +97,7 @@ function timeHourMin(time, hr24, midnightStart) {
     let h, m
 
     if (hr24) {
-        if (midnightStart) {
+        if (midnightStart || typeof midnightStart === "undefined") {
             h = Number(time.slice(0, 2))
         } else {
             h = Number(time.slice(0, 2))
@@ -111,7 +105,7 @@ function timeHourMin(time, hr24, midnightStart) {
         }
         m = Number(time.slice(3, 5))
     } else {
-        if (midnightStart) {
+        if (midnightStart || typeof midnightStart === "undefined") {
             h = Number(time.slice(0, 2))
         } else {
             h = Number(time.slice(0, 2))
@@ -194,7 +188,10 @@ function timeDecimal(time, hr24, midnightStart) {
 
 
 
-
+function hoursDiff(dt1, dt2) {
+    const HOUR = 1000 * 60 * 60;
+    return Math.floor((dt1 - dt2) / HOUR)
+}
 
 
 /* ==========================================================================
@@ -206,7 +203,6 @@ function timeDecimal(time, hr24, midnightStart) {
 // that the item is selected
 // if nothing is selected, it returns -1
 function listFindSelected(parentUL, selectclass) {
-    // return [].findIndex.call(parentUL.childNodes, (cv) => cv.classList.contains(selectclass))
     return [].findIndex.call(parentUL.childNodes, (cv) => {
         if (cv.classList) {
             if (cv.classList.contains(selectclass)) {

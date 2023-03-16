@@ -61,12 +61,13 @@ function dayChangeEvent(e, dayChange) {
 
 
 function dateChange(el, stet) {
-    let hr24 = (findSettings(stet.id)) ? (findSettings(stet.id)).hr24 : false
+    let settings = findSettings(stet.id) || {}
+    let hr24 = (settings.hr24) || false
 
     const elDay = el.children[0]
 
     let lastET = getLastETStored(stet.id)
-    let lastETVsNow = dayDiff(lastET, now())
+    let lastETVsNow = dayDiff(lastET, now().valueOf())
 
     let elHeading = elDay.children[1]
     elDayLeft = elDay.children[0].children[0].children[0]
@@ -95,7 +96,7 @@ function dateChange(el, stet) {
             elDay.classList.remove("warning")
         }
     } else {
-        elHeading.textContent = dateToDMYY(dateChangeDays(now(), Number(stet.day)))
+        elHeading.textContent = dateToDMYY(dateChangeDays(now().valueOf(), Number(stet.day)))
         elDayLeft.classList.add("isvisible")
         elDayRight.classList.add("isvisible")
         if (lastETVsNow === 0) {
@@ -385,6 +386,9 @@ function timesPopulate(st, et, ul, zeroTozero, hr24) {
 }
 
 
+// The End time list can end at midnight,
+// Start time list cannot have midnight
+// at the end of the list
 function midnight(list, hr24) {
     let elLi = document.createElement("li");
     (hr24) ? elLi.textContent = "00:00": elLi.textContent = "00:00 AM"
@@ -417,7 +421,7 @@ function chooseTime(time, ul) {
 // and makes it a date-time value
 function dateFormat(day, time, hr24) {
     let dayChosen = dateChangeDays(new Date(), day)
-    let hr = timeHourMin(time)
+    let hr = timeHourMin(time, hr24)
     let dt = new Date(dayChosen.getFullYear(), dayChosen.getMonth(), dayChosen.getDate(), hr.h, hr.m, 0, 0)
 
     return dt.valueOf()
@@ -488,7 +492,9 @@ function onClickST(e) {
 
         let stet = stetDOM(elStet)
 
-        let hr24 = (findSettings(stet.id)) ? (findSettings(stet.id)).hr24 : false
+        // let hr24 = (findSettings(stet.id)) ? (findSettings(stet.id)).hr24 : false
+        let settings = findSettings(stet.id) || {}
+        let hr24 = (settings.hr24) || false
 
         let st = (e.target.textContent && e.target.classList.contains(SC)) ? e.target.textContent : ""
         stet.elStart.dataset.starttime = st
@@ -527,7 +533,8 @@ function onClickET(e) {
             stet.etUL.scrollTo(0, 0)
         }
 
-        let hr24 = (findSettings(stet.id)) ? (findSettings(stet.id)).hr24 : false
+        let settings = findSettings(stet.id) || {}
+        let hr24 = settings.hr24 || false
 
         timebar(stet, hr24)
 
@@ -628,8 +635,8 @@ function stetWarnings(id, day, st, et) {
     let settings = findSettings(id) || {}
 
     let hr24 = settings.hr24 || false
-    let stHoursBeforeNow = settings.startTimeXHrsBeforeNow || 0;
-    let hrsAgo = hoursDiff(now(), dateFormat(day, st, hr24));
+    let stHoursBeforeNow = (settings.startTimeXHrsBeforeNow) || 0
+    let hrsAgo = hoursDiff(now().valueOf(), dateFormat(day, st, hr24));
 
     let warn = "";
     let durationThreshold = settings.durationOverXHrs || 0;
@@ -735,15 +742,17 @@ function stetResult(id, refresh) {
         return null
     }
 
-    let settings = findSettings(id)
+    let settings = findSettings(id) || {}
 
-    if (!settings) {
-        console.log(`StetSettings needs to have a property 'stetId: ${id}'`)
+    if (isObjectEmpty(settings)) {
+        console.log(`StetSettings array needs to have an object with property 'stetId: ${id}'`)
         return null
     }
 
     let hr24 = settings.hr24 || false
-    let saveLastETInLocalStorage = (typeof settings.saveLastETInLocalStorage === "undefined") ? true : settings.saveLastETInLocalStorage
+    // let saveLastETInLocalStorage = (typeof settings.saveLastETInLocalStorage === "undefined") ? true : settings.saveLastETInLocalStorage
+    let saveLastETInLocalStorage = (settings.saveLastETInLocalStorage) || true
+
 
     let result = {}
 
@@ -870,9 +879,9 @@ setTimeout(() => {
         let stetObj = stetDOM(stet)
 
         let lastET = getLastETStored(stet.id)
-        let lastETVsNow = dayDiff(lastET, now())
-        let hr24 = (findSettings(stet.id)) ? (findSettings(stet.id)).hr24 : false
-
+        let lastETVsNow = dayDiff(lastET, now().valueOf())
+        let settings = findSettings(stet.id) || {}
+        let hr24 = (settings.hr24) || false
 
 
         if ((stetObj.day === 0) && (lastET)) {
