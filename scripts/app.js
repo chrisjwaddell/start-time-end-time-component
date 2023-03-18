@@ -1,8 +1,8 @@
 const StetSettings = [{
     stetId: "task1",
     durationOverXHrs: 10,
-    startTimeXHrsBeforeNow: 10,
-    saveLastETInLocalStorage: false,
+    startTimeXHrsBeforeNow: 1,
+    saveLastETInLocalStorage: true,
     hr24: false
 }]
 
@@ -15,8 +15,7 @@ let elTest1P = document.querySelector(".test1 p")
 
 
 function onAdd1() {
-    let result = stetResult("task1", true)
-    console.log(result)
+    let result = stetResult("task1", true, true)
 
     if (!result) return
 
@@ -43,12 +42,12 @@ function resultMessage(result) {
 
 
 function onClickST1() {
-    let result = stetResult("task1", false)
+    let result = stetResult("task1", false, false)
     elTest1P.textContent = resultMessage(result)
 }
 
 function onClickET1() {
-    let result = stetResult("task1", false)
+    let result = stetResult("task1", false, false)
     elTest1P.textContent = resultMessage(result)
 }
 
@@ -61,7 +60,7 @@ let elTest2P = document.querySelector(".test2 p")
 
 
 function onAdd2() {
-    let result = stetResult("task2", true)
+    let result = stetResult("task2", true, true)
 
     if (!result) return
 
@@ -82,13 +81,13 @@ function onAdd2() {
 
 
 function onClickST2() {
-    let result = stetResult("task2", false)
+    let result = stetResult("task2", false, false)
     console.log(result)
     elTest2P.textContent = resultMessage(result)
 }
 
 function onClickET2() {
-    let result = stetResult("task2", false)
+    let result = stetResult("task2", false, false)
     console.log(result)
     elTest2P.textContent = resultMessage(result)
 }

@@ -153,6 +153,8 @@ function timehmampm(dt, hr24) {
             return "0" + hr + ":" + ((min < 10) ? "0" + min : min) + " AM"
         } else if (hr < 12) {
             return hr + ":" + ((min < 10) ? "0" + min : min) + " AM"
+        } else if (hr === 12) {
+            return hr + ":" + ((min < 10) ? "0" + min : min) + " PM"
         } else if (hr < 22) {
             return "0" + (hr - 12) + ":" + ((min < 10) ? "0" + min : min) + " PM"
         } else {
