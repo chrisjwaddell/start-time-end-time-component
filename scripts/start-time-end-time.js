@@ -553,7 +553,11 @@ function lastETSelectAndET(stet, hr24) {
 
     } else {
         stet.etUL.innerHTML = ""
-        if (stet.day !== 0) midnight(stet.etUL, hr24)
+        if (stet.day !== 0) {
+            midnight(stet.etUL, hr24)
+        } else {
+            refreshET(stet.id, stet.day, stet.etUL, timehmampm(new Date(dateFormat(0, stet.st, false) + 1000 * 60 * 15)), hr24)
+        }
     }
 }
 
@@ -637,8 +641,8 @@ function refreshET(id, day, ul, time, hr24) {
 
     if (day === 0) {
         // Today
-        const MINS_7 = 1000 * 60 * 7
-        timesPopulate(time, timehmampm(new Date(lastTimeRounded(now().valueOf() + MINS_7)), hr24), ul, zeroTozero, hr24)
+        const MINS_AHEAD_ET = 1000 * 60 * 15
+        timesPopulate(time, timehmampm(new Date(lastTimeRounded(now().valueOf() + MINS_AHEAD_ET)), hr24), ul, zeroTozero, hr24)
     } else {
         if (hr24) {
             timesPopulate(time, "23:45", ul, zeroTozero, hr24)
