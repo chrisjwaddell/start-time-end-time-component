@@ -69,8 +69,8 @@ function dayChangeEvent(e, dayChange) {
 
 function dateChange(el, stet) {
     let settings = findSettings(stet.id) || {}
-    let saveLastETInLocalStorage = (typeof settings.saveLastETInLocalStorage === "undefined") ? settingDefaults.saveLastETInLocalStorage : settings.saveLastETInLocalStorage
-    let hr24 = (typeof settings.hr24 === "undefined") ? settingDefaults.hr24 : settings.hr24
+    let saveLastETInLocalStorage = settings.saveLastETInLocalStorage ?? settingDefaults.saveLastETInLocalStorage
+    let hr24 = settings.hr24 ?? settingDefaults.hr24
 
     const elDay = el.children[0]
 
@@ -490,7 +490,7 @@ function onClickST(e) {
         let stet = stetDOM(elStet)
 
         let settings = findSettings(stet.id) || {}
-        let hr24 = (typeof settings.hr24 === "undefined") ? settingDefaults.hr24 : settings.hr24
+        let hr24 = settings.hr24 ?? settingDefaults.hr24
 
         let st = (e.target.textContent && e.target.classList.contains(SC)) ? e.target.textContent : ""
         stet.elStart.dataset.starttime = st
@@ -533,7 +533,7 @@ function onClickET(e) {
         }
 
         let settings = findSettings(stet.id) || {}
-        let hr24 = (typeof settings.hr24 === "undefined") ? settingDefaults.hr24 : settings.hr24
+        let hr24 = settings.hr24 ?? settingDefaults.hr24
 
         timebar(stet, hr24)
 
@@ -675,13 +675,13 @@ const findSettings = (id) => StetSettings.find(s => s.stetId === id)
 function stetWarnings(id, day, st, et) {
     let settings = findSettings(id) || {}
 
-    let hr24 = (typeof settings.hr24 === "undefined") ? settingDefaults.hr24 : settings.hr24
-    let stHoursBeforeNow = (typeof settings.startTimeXHrsBeforeNow === "undefined") ? settingDefaults.startTimeXHrsBeforeNow : settings.startTimeXHrsBeforeNow
+    let hr24 = settings.hr24 ?? settingDefaults.hr24
+    let stHoursBeforeNow = settings.startTimeXHrsBeforeNow ?? settingDefaults.startTimeXHrsBeforeNow
 
     let hrsAgo = hoursDiff(now().valueOf(), dateFormat(day, st, hr24));
 
     let warn = "";
-    let durationOverXHrs = (typeof settings.durationOverXHrs === "undefined") ? settingDefaults.durationOverXHrs : settings.durationOverXHrs
+    let durationOverXHrs = settings.durationOverXHrs ?? settingDefaults.durationOverXHrs
 
     let durationDec = 0
     if ((st !== "0") && (st !== "") && (et !== "0") && (et !== "")) {
@@ -798,8 +798,8 @@ function stetResult(id, refresh) {
         return null
     }
 
-    let hr24 = (typeof settings.hr24 === "undefined") ? settingDefaults.hr24 : settings.hr24
-    let saveLastETInLocalStorage = (typeof settings.saveLastETInLocalStorage === "undefined") ? settingDefaults.saveLastETInLocalStorage : settings.saveLastETInLocalStorage
+    let hr24 = settings.hr24 ?? settingDefaults.hr24
+    let saveLastETInLocalStorage = settings.saveLastETInLocalStorage ?? settingDefaults.saveLastETInLocalStorage
 
 
     let result = {}
@@ -911,10 +911,10 @@ function onTimeout() {
         let stetObj = stetDOM(stet)
 
         let settings = findSettings(stet.id) || {}
-        let saveLastETInLocalStorage = (typeof settings.saveLastETInLocalStorage === "undefined") ? settingDefaults.saveLastETInLocalStorage : settings.saveLastETInLocalStorage
+        let saveLastETInLocalStorage = settings.saveLastETInLocalStorage ?? settingDefaults.saveLastETInLocalStorage
         let lastET = (saveLastETInLocalStorage) ? getLastETStored(stet.id) : null
         let lastETVsNow = (lastET) ? dayDiff(lastET, now().valueOf()) : null
-        let hr24 = (typeof settings.hr24 === "undefined") ? settingDefaults.hr24 : settings.hr24
+        let hr24 = settings.hr24 ?? settingDefaults.hr24
 
         refreshTimeLists(stetObj, lastET, lastETVsNow, hr24)
     })
