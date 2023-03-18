@@ -15,7 +15,7 @@ let elTest1P = document.querySelector(".test1 p")
 
 
 function onAdd1() {
-    let result = stetResult("task1", true, true)
+    let result = stetResult("task1", true)
 
     if (!result) return
 
@@ -42,12 +42,12 @@ function resultMessage(result) {
 
 
 function onClickST1() {
-    let result = stetResult("task1", false, false)
+    let result = stetResult("task1", false)
     elTest1P.textContent = resultMessage(result)
 }
 
 function onClickET1() {
-    let result = stetResult("task1", false, false)
+    let result = stetResult("task1", false)
     elTest1P.textContent = resultMessage(result)
 }
 
@@ -60,7 +60,7 @@ let elTest2P = document.querySelector(".test2 p")
 
 
 function onAdd2() {
-    let result = stetResult("task2", true, true)
+    let result = stetResult("task2", true)
 
     if (!result) return
 
@@ -81,13 +81,13 @@ function onAdd2() {
 
 
 function onClickST2() {
-    let result = stetResult("task2", false, false)
+    let result = stetResult("task2", false)
     console.log(result)
     elTest2P.textContent = resultMessage(result)
 }
 
 function onClickET2() {
-    let result = stetResult("task2", false, false)
+    let result = stetResult("task2", false)
     console.log(result)
     elTest2P.textContent = resultMessage(result)
 }

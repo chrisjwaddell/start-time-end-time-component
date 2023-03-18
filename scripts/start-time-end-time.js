@@ -150,7 +150,6 @@ function timebarReset(el) {
 
 
 function timebar(stet, hr24) {
-    // let elTimebar = stet.timebar.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.childNodes[3].childNodes[1]
     let elTimebar = stet.timebar
 
     let elTimebarBar = elTimebar.childNodes[1]
@@ -212,7 +211,6 @@ function timebar(stet, hr24) {
     const start = Number.parseInt(elTimebarStart.style.left) < MARKER_WIDTH
     const end = (Number.parseInt(elTimebarEnd.style.left) > (COMPONENT_WIDTH - MARKER_WIDTH))
 
-    // if (Number.parseInt(elTimebarStartMarker.style.left) + 72) <= (Number.parseInt(elTimebarEndMarker.style.left))
     let widthOne = false
     let widthTwo = false
 
@@ -554,6 +552,39 @@ function lastETSelectAndET(stet, hr24) {
         if (stet.day !== 0) midnight(stet.etUL, hr24)
     }
 }
+
+
+function refreshTimeLists(stet, lastET, lastETVsNow, hr24) {
+
+    refreshST(stet, lastET, lastETVsNow, hr24)
+
+    stet.st = ""
+    stet.elStart.dataset.starttime = stet.st
+    stet.et = ""
+    stet.elEnd.dataset.starttime = stet.et
+
+    if (lastET) {
+        let chosenVsLastET = dayDiff(lastET, dateChangeDays(new Date(), stet.day).valueOf())
+
+        if (chosenVsLastET === 0) {
+            chooseTime(timehmampm(lastET, hr24), stet.stUL)
+            stet.st = timehmampm(lastET, hr24)
+            stet.elStart.dataset.starttime = stet.st
+
+            lastETSelectAndET(stet, hr24)
+        } else {
+            stet.etUL.scrollTo(0, 0)
+        }
+
+
+    } else {
+        stet.etUL.scrollTo(0, 0)
+
+    }
+
+    timebar(stet, hr24)
+}
+
 
 
 
@@ -906,36 +937,4 @@ function stetDOM(stet) {
         etUL: eletUL
     }
 
-}
-
-
-function refreshTimeLists(stet, lastET, lastETVsNow, hr24) {
-
-    refreshST(stet, lastET, lastETVsNow, hr24)
-
-    stet.st = ""
-    stet.elStart.dataset.starttime = stet.st
-    stet.et = ""
-    stet.elEnd.dataset.starttime = stet.et
-
-    if (lastET) {
-        let chosenVsLastET = dayDiff(lastET, dateChangeDays(new Date(), stet.day).valueOf())
-
-        if (chosenVsLastET === 0) {
-            chooseTime(timehmampm(lastET, hr24), stet.stUL)
-            stet.st = timehmampm(lastET, hr24)
-            stet.elStart.dataset.starttime = stet.st
-
-            lastETSelectAndET(stet, hr24)
-        } else {
-            stet.etUL.scrollTo(0, 0)
-        }
-
-
-    } else {
-        stet.etUL.scrollTo(0, 0)
-
-    }
-
-    timebar(stet, hr24)
 }
