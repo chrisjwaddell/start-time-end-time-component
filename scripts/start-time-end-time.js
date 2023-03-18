@@ -63,7 +63,6 @@ function dayChangeEvent(e, dayChange) {
         hr24
     } = dateChange(elStet, stet)
 
-    // refreshST(stet, lastET, lastETVsNow, hr24)
     refreshTimeLists(stet, lastET, lastETVsNow, hr24)
 }
 
@@ -469,9 +468,7 @@ function refreshST(stet, lastET, lastETVsNow, hr24) {
         }
     }
 
-
     listUnselect(stet.stUL, SC)
-
 }
 
 
@@ -539,7 +536,6 @@ function onClickET(e) {
         let hr24 = (typeof settings.hr24 === "undefined") ? settingDefaults.hr24 : settings.hr24
 
         timebar(stet, hr24)
-
     }
 }
 
@@ -551,15 +547,12 @@ function onClickET(e) {
 function lastETSelectAndET(stet, hr24) {
     let nextST = nextTimeSelectedST(stet.stUL)
     if (nextST !== "") {
-        // let eletUL = stUL.parentNode.parentNode.parentNode.parentNode.childNodes[3].childNodes[3].childNodes[1].childNodes[1]
         refreshET(stet.id, stet.day, stet.etUL, nextST, hr24)
 
     } else {
         stet.etUL.innerHTML = ""
         if (stet.day !== 0) midnight(stet.etUL, hr24)
     }
-    // timebar(stet, hr24)
-
 }
 
 
@@ -799,30 +792,18 @@ function stetResult(id, refresh, updateLocalStorage) {
     let w = stetWarnings(stet.id, stet.day, stt, ett)
     result.warnings = w
 
-    let lastET = lastTimeRounded(dateFormat(result.day, ett, hr24)).valueOf()
-    if (saveLastETInLocalStorage && updateLocalStorage) setLastETStored(id, lastET)
 
     if (refr) {
         if (result.stetFilledIn) {
+
+            let lastET = lastTimeRounded(dateFormat(result.day, ett, hr24)).valueOf()
+            if (saveLastETInLocalStorage) setLastETStored(id, lastET)
+
             listUnselect(stet.stUL, SC)
             listUnselect(stet.etUL, SC)
 
             let lastETVsNow = (lastET) ? dayDiff(lastET, now().valueOf()) : null
             refreshTimeLists(stet, lastTimeRounded(dateFormat(result.day, ett, hr24)).valueOf(), lastETVsNow, hr24)
-
-            // chooseTime(stet.et, stet.stUL)
-
-            // stet.elStart.dataset.starttime = result.et
-            // stet.st = result.et
-
-
-            // stet.elEnd.dataset.endtime = ""
-            // stet.et = ""
-
-            // lastETSelectAndET(stet, hr24)
-
-            // timebarReset(elStet)
-            // timebar(stet, hr24)
         }
     }
 
@@ -851,9 +832,6 @@ function onSTETPageLoad() {
             hr24
         } = dateChange(stet, stetObj)
 
-        // dateChange(stet, stetObj)
-
-        // refreshST(stetObj, lastET, lastETVsNow, hr24)
         refreshTimeLists(stetObj, lastET, lastETVsNow, hr24)
     })
 
@@ -891,7 +869,6 @@ function onTimeout() {
         let lastETVsNow = (lastET) ? dayDiff(lastET, now().valueOf()) : null
         let hr24 = (typeof settings.hr24 === "undefined") ? settingDefaults.hr24 : settings.hr24
 
-        // refreshST(stetObj, lastET, lastETVsNow, hr24)
         refreshTimeLists(stetObj, lastET, lastETVsNow, hr24)
     })
 
