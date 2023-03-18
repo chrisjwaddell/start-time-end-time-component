@@ -1,10 +1,22 @@
 const StetSettings = [{
-    stetId: "task1",
-    durationOverXHrs: 10,
-    startTimeXHrsBeforeNow: 1,
-    saveLastETInLocalStorage: true,
-    hr24: false
-}]
+        stetId: "task1",
+        durationOverXHrs: 10,
+        startTimeXHrsBeforeNow: 10,
+        saveLastETInLocalStorage: true,
+        hr24: false,
+        startTimeClickCallback: onClickST1,
+        endTimeClickCallback: onClickET1
+    },
+    {
+        stetId: "task2",
+        durationOverXHrs: 1,
+        startTimeXHrsBeforeNow: 1,
+        saveLastETInLocalStorage: true,
+        hr24: false,
+        startTimeClickCallback: onClickST2,
+        endTimeClickCallback: onClickET2
+    }
+]
 
 
 const elTimeItems1 = document.querySelector(".time-items1")
@@ -97,9 +109,9 @@ document.addEventListener("DOMContentLoaded", (e) => {
     elAdd1.addEventListener("click", onAdd1)
     elAdd2.addEventListener("click", onAdd2)
 
-    document.querySelectorAll(".stet")[0].querySelector(".start ul").addEventListener("click", onClickST1)
-    document.querySelectorAll(".stet")[0].querySelector(".end ul").addEventListener("click", onClickET1)
+    // document.querySelectorAll(".stet")[0].querySelector(".start ul").addEventListener("click", onClickST1)
+    // document.querySelectorAll(".stet")[0].querySelector(".end ul").addEventListener("click", onClickET1)
 
-    document.querySelectorAll(".stet")[1].querySelector(".start ul").addEventListener("click", onClickST2)
-    document.querySelectorAll(".stet")[1].querySelector(".end ul").addEventListener("click", onClickET2)
+    // document.querySelectorAll(".stet")[1].querySelector(".start ul").addEventListener("click", onClickST2)
+    // document.querySelectorAll(".stet")[1].querySelector(".end ul").addEventListener("click", onClickET2)
 })

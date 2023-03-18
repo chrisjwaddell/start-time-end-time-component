@@ -508,6 +508,8 @@ function onClickST(e) {
         }
 
         timebar(stet, hr24)
+
+        if (settings.startTimeClickCallback) settings.startTimeClickCallback()
     }
 }
 
@@ -534,6 +536,8 @@ function onClickET(e) {
         let hr24 = (typeof settings.hr24 === "undefined") ? settingDefaults.hr24 : settings.hr24
 
         timebar(stet, hr24)
+
+        if (settings.endTimeClickCallback) settings.endTimeClickCallback()
     }
 }
 
@@ -583,6 +587,10 @@ function refreshTimeLists(stet, lastET, lastETVsNow, hr24) {
     }
 
     timebar(stet, hr24)
+
+    let settings = findSettings(stet.id) || {}
+    if (settings.startTimeClickCallback) settings.startTimeClickCallback()
+
 }
 
 
@@ -669,19 +677,23 @@ function stetWarnings(id, day, st, et) {
     let hrsAgo = hoursDiff(now().valueOf(), dateFormat(day, st, hr24));
 
     let warn = "";
-    let durationThreshold = (typeof settings.durationThreshold === "undefined") ? settingDefaults.durationThreshold : settings.durationThreshold
+    let durationOverXHrs = (typeof settings.durationOverXHrs === "undefined") ? settingDefaults.durationOverXHrs : settings.durationOverXHrs
 
     let durationDec = 0
     if ((st !== "0") && (st !== "") && (et !== "0") && (et !== "")) {
         durationDec = durationDecimal(st, et, hr24)
     }
 
-    if ((durationDec > (durationThreshold / 24)) && (durationThreshold !== 0)) {
-        warn = requiredMsg(warn, "This is over " + durationThreshold + " hours.")
+    if ((st !== "0") && (st !== "") && (et !== "0") && (et !== "")) {
+        if ((durationDec > (durationOverXHrs / 24)) && (durationOverXHrs !== 0)) {
+            warn = requiredMsg(warn, "This is over " + durationOverXHrs + " hours.")
+        }
     }
 
-    if ((stHoursBeforeNow <= hrsAgo) && (stHoursBeforeNow !== 0)) {
-        warn = requiredMsg(warn, "The Start time was " + hrsAgo + " hours ago.")
+    if ((st !== "0") && (st !== "")) {
+        if ((stHoursBeforeNow <= hrsAgo) && (stHoursBeforeNow !== 0)) {
+            warn = requiredMsg(warn, "The Start time was " + hrsAgo + " hours ago.")
+        }
     }
 
     return warn
@@ -714,7 +726,7 @@ function duration(st, et, hr24) {
     if (dur < 0.04166) {
         // if it's less than an hour, use minutes as the duration measure
         return {
-            durationText: Math.floor(dur * 1440) + " mins",
+            durationText: Math.round(dur * 1440) + " mins",
             durationDecimal: dur * 24
         }
     } else {
@@ -764,7 +776,7 @@ function lastTimeRounded(dt) {
 // refresh means clear the start time and end time lists
 // and refresh the timebar
 // updateLocalStorage tells it to localStorage with the lastET
-function stetResult(id, refresh, updateLocalStorage) {
+function stetResult(id, refresh) {
     const refr = refresh || false
     const getStet = (id) => document.querySelector(`.stet[data-stet-id="${id}"]`)
 
