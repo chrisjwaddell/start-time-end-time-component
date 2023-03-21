@@ -302,14 +302,6 @@ function timebar(stet, hr24) {
 // Assigns tabindex
 // ST - if true, ST list, else ET list
 function tabIndexAssign(el, stetid, ST) {
-	if (el.nodeName === "UL") debugger
-	if (el.nodeName === "UL") {
-		if (confirm("Debug mode?")) {
-			console.error("UL")
-			debugger
-		}
-	}
-
 	let settings = findSettings(stetid) || {}
 	let startTimeTabindex = settings.startTimeTabindex ?? null
 	let endTimeTabindex = settings.endTimeTabindex ?? null
