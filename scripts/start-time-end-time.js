@@ -1123,11 +1123,13 @@ function onTimeout() {
 	arrStet.forEach((stet) => {
 		let stetObj = stetDOM(stet)
 
-		let settings = findSettings(stet.id) || {}
+		let settings = findSettings(stetObj.id) || {}
 		let saveLastETInLocalStorage =
 			settings.saveLastETInLocalStorage ??
 			settingDefaults.saveLastETInLocalStorage
-		let lastET = saveLastETInLocalStorage ? getLastETStored(stet.id) : null
+		let lastET = saveLastETInLocalStorage
+			? getLastETStored(stetObj.id)
+			: null
 		let lastETVsNow = lastET ? dayDiff(lastET, now().valueOf()) : null
 		let hr24 = settings.hr24 ?? settingDefaults.hr24
 
