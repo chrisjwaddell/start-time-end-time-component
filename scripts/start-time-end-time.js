@@ -745,12 +745,14 @@ function refreshTimeLists(stet, lastET, lastETVsNow, hr24) {
 		if (chosenVsLastET === 0) {
 			let index = chooseTime(timehmampm(lastET, hr24), stet.stUL)
 
-			tabIndexAssign(stet.stUL.children[index], stet.id, true)
+			if (index !== -1) {
+				tabIndexAssign(stet.stUL.children[index], stet.id, true)
 
-			stet.st = timehmampm(lastET, hr24)
-			stet.elStart.dataset.starttime = stet.st
+				stet.st = timehmampm(lastET, hr24)
+				stet.elStart.dataset.starttime = stet.st
 
-			lastETSelectAndET(stet, hr24)
+				lastETSelectAndET(stet, hr24)
+			}
 		} else {
 			// If nothing is selected, this at least keeps tabindex
 			tabIndexAssign(stet.stUL.children[0], stet.id, true)
