@@ -59,7 +59,8 @@ function dayDiff(dt1, dt2) {
 // Go forward or back x days
 function dateChangeDays(dt, days) {
 	let d = new Date(dt)
-	return new Date(d.setDate(d.getDate() + days))
+	const ONE_DAY = 86400000 // 1000 * 60 * 60 * 24
+	return new Date(d.valueOf() + ONE_DAY * days))
 }
 
 // Assumes all dates in 2000 to 2099
