@@ -660,23 +660,26 @@ function onKeyDown(stet, ST, e) {
 	}
 }
 
-// function onBlur(e) {
-// 	console.log("onBlur")
-// }
-
 function onClickET(e) {
 	if (e.target.textContent) {
 		const elStet =
 			e.target.parentNode.parentNode.parentNode.parentNode.parentNode
 				.parentNode
 
-		let stet = stetDOM(elStet)
+		if (elStet.className === "field-section") {
+			let stet = stetDOM(elStet)
 
-		const selectedPreviously = listFindSelected(e.target.parentNode, SC)
+			if (stet) {
+				const selectedPreviously = listFindSelected(
+					e.target.parentNode,
+					SC
+				)
 
-		ETUpdate(stet, e.target, selectedPreviously)
+				ETUpdate(stet, e.target, selectedPreviously)
 
-		e.target.focus()
+				e.target.focus()
+			}
+		}
 	}
 }
 
@@ -1148,30 +1151,34 @@ setTimeout(() => onTimeout(), 1000 * 60 * 10)
 // end lists, start value, end value, day value and timebar
 // element
 function stetDOM(stet) {
-	let id = idValue(stet)
-	let timebar = stet.childNodes[3].childNodes[1]
-	let day = dayValue(stet.childNodes[1])
-	let elStart = stet.childNodes[5].childNodes[1]
-	let elEnd = stet.childNodes[5].childNodes[3]
-	let st = stValue(stet.childNodes[5].childNodes[1])
-	let et = etValue(stet.childNodes[5].childNodes[3])
-	let elstUL =
-		stet.childNodes[5].childNodes[1].childNodes[3].childNodes[1]
-			.childNodes[1]
-	let eletUL =
-		stet.childNodes[5].childNodes[3].childNodes[3].childNodes[1]
-			.childNodes[1]
+	if (stet.childNodes[3] && stet.childNodes[5]) {
+		let id = idValue(stet)
+		let timebar = stet.childNodes[3].childNodes[1]
+		let day = dayValue(stet.childNodes[1])
+		let elStart = stet.childNodes[5].childNodes[1]
+		let elEnd = stet.childNodes[5].childNodes[3]
+		let st = stValue(stet.childNodes[5].childNodes[1])
+		let et = etValue(stet.childNodes[5].childNodes[3])
+		let elstUL =
+			stet.childNodes[5].childNodes[1].childNodes[3].childNodes[1]
+				.childNodes[1]
+		let eletUL =
+			stet.childNodes[5].childNodes[3].childNodes[3].childNodes[1]
+				.childNodes[1]
 
-	return {
-		id,
-		timebar,
-		day,
-		elStart,
-		elEnd,
-		st,
-		et,
-		stUL: elstUL,
-		etUL: eletUL,
+		return {
+			id,
+			timebar,
+			day,
+			elStart,
+			elEnd,
+			st,
+			et,
+			stUL: elstUL,
+			etUL: eletUL,
+		}
+	} else {
+		return null
 	}
 }
 
@@ -1188,9 +1195,11 @@ function onFocus(id, e) {
 	}
 
 	if (selectedPreviously === -1) {
-		elUL.children[0].classList.add(SC)
-		tabIndexAssign(elUL.children[0], id, true)
-		elUL.children[0].focus()
-		elUL.scrollTo(0, 0)
+		if (elUL.children[0]) {
+			elUL.children[0].classList.add(SC)
+			tabIndexAssign(elUL.children[0], id, true)
+			elUL.children[0].focus()
+			elUL.scrollTo(0, 0)
+		}
 	}
 }
