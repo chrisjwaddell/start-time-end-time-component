@@ -38,13 +38,10 @@ localStorage and a variable are used to remember the last End Time and that End 
 
 ## Settings
 Settings can be adjusted in *start-time-end-time.js* in the *settings* object.
-* 24 hour time or hh:mm AM/PM format
-* warnOver12Hrs - Boolean - Warns you if you've chosen a time period over 12 hours.
-
-durationOverXHrs - Optionally warns you if End time minus Start time is over a certain period. The default is 10 hours. Set it to 0 to turn this warning off.
-startTimeXHrsBeforeNow - Optionally warns you if the Start time chosen is a certain amount of hours before now (the time you are entering it). This option is handy to warn you that you are on the wrong day or you chose the PM time instead of AM. The default is 12 hours. Set it to 0 to turn this warning off. 
-saveLastETInLocalStorage - Save the last entered End time into localStorage. If this setting is true, the next time you enter the times, the Start time is set to the last End time. The default is true.
-hr24 - 24 hour time. The default is false.
+* *durationOverXHrs* - Optionally warns you if End time minus Start time is over a certain period. The default is 10 hours. Set it to 0 to turn this warning off.
+* *startTimeXHrsBeforeNow* - Optionally warns you if the Start time chosen is a certain amount of hours before now (the time you are entering it). This option is handy to warn you that you are on the wrong day or you chose the PM time instead of AM. The default is 12 hours. Set it to 0 to turn this warning off. 
+* *saveLastETInLocalStorage* - Save the last entered End time into localStorage. If this setting is true, the next time you enter the times, the Start time is set to the last End time. The default is true.
+* *hr24* - 24 hour time or hh:mm AM/PM format. The default is false.
 
 
 
