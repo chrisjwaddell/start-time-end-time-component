@@ -37,7 +37,8 @@ localStorage and a variable are used to remember the last End Time and that End 
 
 
 ## Settings
-Settings can be adjusted in *start-time-end-time.js* in the *settings* object.
+Settings can be adjusted in the *StetSettings* array. It takes an array of settings, if you have two *Start time end time* components, you can have two objects in the array.
+
 * *durationOverXHrs* - Optionally warns you if End time minus Start time is over a certain period. The default is 10 hours. Set it to 0 to turn this warning off.
 * *startTimeXHrsBeforeNow* - Optionally warns you if the Start time chosen is a certain amount of hours before now (the time you are entering it). This option is handy to warn you that you are on the wrong day or you chose the PM time instead of AM. The default is 12 hours. Set it to 0 to turn this warning off. 
 * *saveLastETInLocalStorage* - Save the last entered End time into localStorage. If this setting is true, the next time you enter the times, the Start time is set to the last End time. The default is true.
