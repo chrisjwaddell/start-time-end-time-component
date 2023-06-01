@@ -3,6 +3,7 @@
 :root {
 	--color-primary: #ffa000;
 	--color-secondary: #55aa22;
+	--color-secondary-hover: rgba(85, 170, 34, 0.5);
 	--color-primary__hover: rgba(255, 160, 0, 0.5);
 	--field-margin: 5px;
 	/* --color-primary__hover: #ffa000; */
@@ -205,66 +206,6 @@ input {
 	width: 60px;
 	border-style: solid;
 	border-width: 1px;
-}
-
-/* Style variants
-   ========================================================================== */
-.e-input--primary {
-	height: 2rem;
-	padding: 0.25em 0.5em;
-	font-size: 22px;
-	font-family: "Source Sans Pro", sans-serif;
-	border: 2px solid #fee000;
-	border-radius: 6px;
-}
-
-.e-input--primary:hover,
-.e-input--primary:focus,
-.e-input--primary:active {
-	background-color: #f4f4f4;
-	transition: background-color 0.2s linear, color 0.2s linear;
-}
-
-.e-input--primary:focus,
-.e-input--primary:active {
-	color: white;
-	outline: none;
-	background-color: #231f20;
-	transition: background-color 0.2s linear, color 0.2s linear;
-	box-shadow: 0 0 0 0.125rem white, 0 0 0 0.325rem #fee000;
-}
-
-.e-input--primary:placeholder-shown {
-	background-color: #fee000;
-}
-
-.e-input--secondary {
-	height: 2rem;
-	padding: 0.25em 0.5em;
-	font-size: 22px;
-	font-family: "Source Sans Pro", sans-serif;
-	border: 2px solid #fee000;
-	border-radius: 12px;
-}
-
-.e-input--secondary:hover,
-.e-input--secondary:focus,
-.e-input--secondary:active {
-	background-color: #f4f4f4;
-	transition: background-color 0.2s linear, color 0.2s linear;
-}
-
-.e-input--secondary:focus,
-.e-input--secondary:active {
-	color: white;
-	outline: none;
-	background-color: #231f20;
-	transition: background-color 0.2s linear, color 0.2s linear;
-	box-shadow: 0 0 0 0.125rem white, 0 0 0 0.325rem #fee000;
-}
-
-.e-input--secondary:placeholder-shown {
-	background-color: #fee000;
 }
 
 /* ==========================================================================
