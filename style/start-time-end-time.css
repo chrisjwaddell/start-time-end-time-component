@@ -9,43 +9,6 @@
 	text-align: center;
 }
 
-.times .start,
-.times .end {
-	width: 150px;
-	margin: var(--field-margin);
-	border: 1px solid var(--color-secondary);
-	padding-left: 12px;
-	padding-right: 12px;
-}
-
-.times .ampm {
-	margin-top: 5px;
-}
-
-.times ul {
-	height: 200px;
-	overflow-y: auto;
-	overflow-x: hidden;
-	list-style: none;
-	margin: 0;
-	width: 6.5rem;
-	line-height: 1.25;
-	text-align: center;
-	border: 1px solid var(--color-primary);
-}
-
-.times li {
-	width: 5.5rem;
-	outline: 0;
-}
-
-.times li:focus {
-	outline: 2px solid #44bb55;
-	box-shadow: 0px 0px 2px 1px #44bb55;
-	/* border-radius: 25%;
-    border-radius: 25%; */
-}
-
 .day {
 	display: flex;
 	width: 100%;
@@ -121,11 +84,9 @@
 }
 
 .day__timebar--bar {
-	width: 50px;
-	/* background-color: #4488ee; */
+	left: 0px;
+	width: 0px;
 	background-color: #aa99cc;
-	left: 50px;
-	/* border-radius: 50px; */
 }
 
 .day__timebar--bar,
@@ -154,11 +115,6 @@
 	background-color: #000000;
 	border-radius: 12px;
 	/* cursor: grab; */
-}
-
-.start .field,
-.end .field {
-	margin: 0 auto;
 }
 
 .day__timebar .marker {
@@ -246,10 +202,59 @@
 	font-size: 14px;
 }
 
-.day__timebar-start-marker {
-	/* top: -2px; */
+.times .start,
+.times .end {
+	width: 150px;
+	margin: var(--field-margin);
+	border: 1px solid var(--color-secondary);
+	padding-left: 12px;
+	padding-right: 12px;
 }
 
-.day__timebar-end-marker {
-	/* bottom: 8px; */
+/* Dropdown-field CSS overwrite */
+
+.ddfield {
+	margin: 5px auto 10px;
+}
+
+.ddfield > label {
+	display: block;
+	height: 25px;
+	margin-bottom: 5px;
+	margin-left: 5px;
+	font-size: 1.4rem;
+	line-height: 1.25;
+	text-align: left;
+}
+
+/* Specific CSS for time fields */
+.time-field {
+	--dd-width: 125px;
+	--dd-font-size: 15px;
+	--dd-border-radius: 8px;
+	--dd-input-height: 32px;
+	/* color: #880522; */
+}
+
+.time-field input {
+	border: 2px solid #e8ba40;
+}
+
+.time-field .inputarrow .arrow {
+	background-image: unset;
+	border-width: 0;
+}
+
+.time-field.ddfield ul.ddlist {
+	border: 2px solid var(--color-primary);
+	/* background-color: var(--color-primary); */
+}
+
+.time-field.ddfield ul.ddlist li:hover {
+	color: #000000;
+	background-color: var(--color-secondary-hover);
+}
+
+.time-field.ddfield .ddlist li.selected {
+	background-color: var(--color-secondary);
 }

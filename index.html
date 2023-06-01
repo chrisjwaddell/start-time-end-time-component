@@ -1,220 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-		<meta name="description" content="" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Start time End time component</title>
-		<link
-			rel="stylesheet"
-			href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css"
-		/>
-		<link
-			rel="stylesheet"
-			href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"
-		/>
-		<link rel="stylesheet" href="./style/style.css" />
-		<link rel="stylesheet" href="./style/start-time-end-time.css" />
-		<style></style>
-	</head>
 
-	<body>
-		<div
-			class="o-container"
-			style="
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Start time End time component</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
+    <link rel="stylesheet" href="./style/style.css" />
+    <link rel="stylesheet" href="./style/dropdown-field.css" />
+    <link rel="stylesheet" href="./style/start-time-end-time.css" />
+    <style></style>
+</head>
+
+<body>
+    <div class="o-container" style="
 				margin-top: 50px;
 				margin-bottom: 50px;
 				font-family: sans-serif;
-			"
-		>
-			<div class="o-flex">
-				<div class="">
-					<div class="times">
-						<div class="field-section">
-							<h2>Task 1</h2>
-							<div class="stet" data-stet-id="task1">
-								<div class="day" data-day="0">
-									<div class="triangle__container">
-										<div class="triangle">
-											<div
-												class="triangle--left isvisible"
-											></div>
-										</div>
-									</div>
-									<h3 class="text-center">Today</h3>
-									<div class="triangle__container">
-										<div class="triangle">
-											<div class="triangle--right"></div>
-										</div>
-									</div>
-								</div>
-								<div>
-									<div class="day__timebar">
-										<div
-											class="day__timebar--bar"
-											style="width: 0px"
-										></div>
-										<div
-											class="day__timebar--bar-template"
-										></div>
+			">
 
-										<div class="day__timebar-start"></div>
-										<div class="day__timebar-end"></div>
+        <div class="o-flex centre">
 
-										<div
-											class="day__timebar-start-marker marker"
-										>
-											<p></p>
-										</div>
-										<div
-											class="day__timebar-end-marker marker"
-										>
-											<p></p>
-										</div>
-									</div>
-								</div>
+            <div class="one">
+                <div class="times">
+                    <div class="field-section">
+                    </div>
+                </div>
+            </div>
 
-								<div class="o-flex">
-									<div class="start" data-starttime="">
-										<h3>Start Time</h3>
-										<div class="o-flex">
-											<div class="field">
-												<ul tabindex="-1"></ul>
-											</div>
-										</div>
-									</div>
+            <div class="two">
+                <div class="times">
+                    <div class="field-section">
+                    </div>
+                </div>
+            </div>
 
-									<div class="end" data-endtime="">
-										<h3>End Time</h3>
-										<div class="o-flex">
-											<div class="field">
-												<ul tabindex="-1"></ul>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
 
-					<div
-						class="test1"
-						style="
-							margin: 40px 0;
-							text-align: center;
-							max-width: 325px;
-							width: 325px;
-						"
-					>
-						<p></p>
-						<button
-							class="add1"
-							style="margin-top: 8px"
-							tabindex="3"
-						>
-							Add
-						</button>
 
-						<div class="time-items1"></div>
-					</div>
-				</div>
 
-				<div class="">
-					<div class="times">
-						<div class="field-section">
-							<h2>Task 2</h2>
-							<div class="stet" data-stet-id="task2">
-								<div class="day" data-day="0">
-									<div class="triangle__container">
-										<div class="triangle">
-											<div
-												class="triangle--left isvisible"
-											></div>
-										</div>
-									</div>
-									<h3 class="text-center">Today</h3>
-									<div class="triangle__container">
-										<div class="triangle">
-											<div class="triangle--right"></div>
-										</div>
-									</div>
-								</div>
-								<div>
-									<div class="day__timebar">
-										<div
-											class="day__timebar--bar"
-											style="width: 0px"
-										></div>
-										<div
-											class="day__timebar--bar-template"
-										></div>
+        </div>
 
-										<div class="day__timebar-start"></div>
-										<div class="day__timebar-end"></div>
 
-										<div
-											class="day__timebar-start-marker marker"
-										>
-											<p></p>
-										</div>
-										<div
-											class="day__timebar-end-marker marker"
-										>
-											<p></p>
-										</div>
-									</div>
-								</div>
+        <div class="o-flex centre" style="text-align: center; margin-top: 40px">
+            <div class="o-flex-1 results1btn" style="flex: 0 0 350px;">
+                <button class="results1">Results</button>
+                <p style="color: red;"></p>
+                <p style="color: red;"></p>
+            </div>
+            <div class="o-flex-1 results2btn" style="flex: 0 0 350px;">
+                <button class="results2">Results</button>
+                <p style="color: red;"></p>
+                <p style="color: red;"></p>
+            </div>
+        </div>
 
-								<div class="o-flex">
-									<div class="start" data-starttime="">
-										<h3>Start Time</h3>
-										<div class="o-flex">
-											<div class="field">
-												<ul tabindex="-1"></ul>
-											</div>
-										</div>
-									</div>
+        <div class="o-flex centre" style="text-align: center; margin-top: 40px">
+            <div class="o-flex-1 add1btn" style="flex: 0 0 350px;">
+                <button class="add1">Add</button>
+                <p style="color: red;"></p>
+                <p style="color: red;"></p>
+            </div>
+            <div class="o-flex-1 add2btn" style="flex: 0 0 350px;">
+                <button class="add2">Add</button>
+                <p style="color: red;"></p>
+                <p style="color: red;"></p>
+            </div>
+        </div>
 
-									<div class="end" data-endtime="">
-										<h3>End Time</h3>
-										<div class="o-flex">
-											<div class="field">
-												<ul tabindex="-1"></ul>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
+        <!-- <input type="text" autofocus> -->
+</body>
 
-					<div
-						class="test2"
-						style="
-							margin: 40px 0;
-							text-align: center;
-							max-width: 325px;
-							width: 325px;
-						"
-					>
-						<p></p>
-						<button
-							class="add2"
-							style="margin-top: 8px"
-							tabindex="6"
-						>
-							Add
-						</button>
 
-						<div class="time-items2"></div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</body>
+<!-- Dev -->
+<script src="./scripts/log.js"></script>
 
-	<script src="./scripts/utils.js"></script>
-	<script src="./scripts/start-time-end-time.js"></script>
-	<script src="./scripts/app.js"></script>
+<script src="./scripts/utils.js"></script>
+
+<script src="./scripts/dropdown-field.js"></script>
+<script src="./scripts/start-time-end-time.js"></script>
+<script src="./scripts/app.js"></script>
+
 </html>

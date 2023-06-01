@@ -187,7 +187,7 @@ function hoursDiff(dt1, dt2) {
 }
 
 /* ==========================================================================
-   # LIST
+   ^LIST
    ========================================================================== */
 
 // selectclass is the css class that is used to show
@@ -205,38 +205,32 @@ function listFindSelected(parentUL, selectclass) {
 	})
 }
 
-// Unselects the first item that's selected
-// Works for single select lists
-function listUnselect(parentUL, selectclass) {
-	let i = listFindSelected(parentUL, selectclass)
-	if (i !== -1) parentUL.children[i].classList.remove(selectclass)
-	parentUL.scrollTo(0, 0)
+/* ******************************************************************************
+// ^DOM
+ *******************************************************************************/
+
+function appendChild(el, child) {
+	return el.appendChild(child)
 }
 
-// Toggle on and off when an item in a list is selected
-// The list is a single select list
-// There is no toggling on and off
-// Usage: elSTUL.addEventListener("click", onListClick)
-function onListClick(e) {
-	const el = e.target
-	console.log(e.target)
+// class takes an array eg [ "isvisible", "link" ]
+// attributes take an array of arrays eg [ ["href", "www.google.com"] ]
 
-	const selectedPreviously = listFindSelected(e.target.parentNode, SC)
-	const selectedPreviouslyText =
-		selectedPreviously === -1
-			? ""
-			: e.target.parentNode.children[selectedPreviously].textContent
-	const selectedNowText = e.target.textContent
+function createElementAtt(parent, element, cls, att, text) {
+	var el = document.createElement(element)
+	// debugger
 
-	// const sameField = previousField === e.target.parentNode
-	const sameField = true
-
-	if (selectedPreviously !== -1) {
-		if (selectedPreviouslyText !== selectedNowText) {
-			e.target.parentNode.children[selectedPreviously].classList.remove(
-				SC
-			)
-		}
+	if (text) {
+		el.textContent = text
 	}
-	e.target.classList.add(SC)
+
+	cls.forEach((item) => {
+		el.classList.add(item)
+	})
+
+	att.forEach((i) => {
+		el.setAttribute(i[0], i[1])
+	})
+
+	return (parent && appendChild(parent, el)) || el
 }

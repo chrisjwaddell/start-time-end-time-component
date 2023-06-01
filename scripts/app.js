@@ -1,51 +1,24 @@
-const StetSettings = [
-	{
-		stetId: "task1",
-		durationOverXHrs: 10,
-		startTimeXHrsBeforeNow: 10,
-		saveLastETInLocalStorage: true,
-		hr24: false,
-		startTimeTabindex: 1,
-		autofocus: true,
-		startTimeClickCallback: onClickST1,
-		endTimeClickCallback: onClickET1,
+// STET-app.js
+let one = STET(".one .field-section", "one", "One", 1, {
+	autofocus: true,
+	STClickCallback: () => {
+		onChangeST1()
 	},
-	{
-		stetId: "task2",
-		durationOverXHrs: 1,
-		startTimeXHrsBeforeNow: 1,
-		saveLastETInLocalStorage: true,
-		hr24: false,
-		startTimeTabindex: 4,
-		startTimeClickCallback: onClickST2,
-		endTimeClickCallback: onClickET2,
+	ETClickCallback: () => {
+		onChangeET1()
 	},
-]
+})
 
-const elTimeItems1 = document.querySelector(".time-items1")
-
-let elAdd1 = document.querySelector(".add1")
-
-let elTest1P = document.querySelector(".test1 p")
-
-function onAdd1() {
-	let result = stetResult("task1", true)
-
-	if (!result) return
-
-	let elP
-	if (result.stetFilledIn) {
-		elP = document.createElement("p")
-		elP.textContent = result.st + " - " + result.et
-
-		elTimeItems1.appendChild(elP)
-		elTest1P.textContent = ""
-	} else {
-		alert(result.required)
-	}
-
-	elUL[0].children[listFindSelected(elUL[0], SC)].focus()
-}
+let two = STET(".two .field-section", "two", "Two", 3, {
+	durationOverXHrs: 2,
+	startTimeXHrsBeforeNow: 12,
+	STClickCallback: () => {
+		onChangeST2()
+	},
+	ETClickCallback: () => {
+		onChangeET2()
+	},
+})
 
 function resultMessage(result) {
 	if (result.stetFilledIn) {
@@ -55,64 +28,124 @@ function resultMessage(result) {
 	}
 }
 
-function onClickST1() {
-	let result = stetResult("task1", false)
-	elTest1P.textContent = resultMessage(result)
-}
+let elResults1 = document.querySelector(".results1")
+let elAdd1 = document.querySelector(".add1")
 
-function onClickET1() {
-	let result = stetResult("task1", false)
-	elTest1P.textContent = resultMessage(result)
-}
+function onResults1() {
+	let result = one.getResults(false)
+	let elP11 = document.querySelector(".results1btn p")
+	let elP12 = document.querySelectorAll(".results1btn p")[1]
 
-const elTimeItems2 = document.querySelector(".time-items2")
-
-let elAdd2 = document.querySelector(".add2")
-
-let elTest2P = document.querySelector(".test2 p")
-
-let elUL = document.querySelectorAll("ul")
-
-function onAdd2() {
-	let result = stetResult("task2", true)
-
+	clearFields1()
 	if (!result) return
 
-	console.log(result)
-
-	let elP
 	if (result.stetFilledIn) {
-		elP = document.createElement("p")
-		elP.textContent = result.st + " - " + result.et
-
-		elTimeItems2.appendChild(elP)
-		elTest2P.textContent = ""
+		elP11.textContent = result.st + " - " + result.et
+		elP12.textContent = result.durationText + ", " + result.warnings
 	} else {
 		alert(result.required)
 	}
-
-	elUL[2].children[listFindSelected(elUL[2], SC)].focus()
 }
 
-function onClickST2() {
-	let result = stetResult("task2", false)
-	console.log(result)
-	elTest2P.textContent = resultMessage(result)
+function onAdd1() {
+	let result = one.getResults(true)
+	let elP11 = document.querySelector(".add1btn p")
+	let elP12 = document.querySelectorAll(".add1btn p")[1]
+
+	clearFields1()
+	if (!result) return
+
+	if (result.stetFilledIn) {
+		elP11.textContent = result.st + " - " + result.et
+		elP12.textContent = result.durationText + ", " + result.warnings
+	} else {
+		alert(result.required)
+	}
 }
 
-function onClickET2() {
-	let result = stetResult("task2", false)
-	console.log(result)
-	elTest2P.textContent = resultMessage(result)
+function clearFields1() {
+	let elP11 = document.querySelector(".add1btn p")
+	let elP12 = document.querySelectorAll(".add1btn p")[1]
+
+	elP11.textContent = ""
+	elP12.textContent = ""
+}
+
+function onChangeST1() {
+	let result = one.getResults(false)
+	let elP12 = document.querySelectorAll(".add1btn p")[1]
+	clearFields1()
+	elP12.textContent = resultMessage(result)
+}
+
+function onChangeET1() {
+	let result = one.getResults(false)
+	let elP12 = document.querySelectorAll(".add1btn p")[1]
+	clearFields1()
+	elP12.textContent = resultMessage(result)
+}
+
+let elResults2 = document.querySelector(".results2")
+let elAdd2 = document.querySelector(".add2")
+
+function onResults2() {
+	let result = two.getResults(false)
+	let elP21 = document.querySelector(".results2btn p")
+	let elP22 = document.querySelectorAll(".results2btn p")[1]
+
+	if (!result) return
+
+	if (result.stetFilledIn) {
+		elP21.textContent = result.st + " - " + result.et
+		elP22.textContent = result.durationText + ", " + result.warnings
+	} else {
+		alert(result.required)
+	}
+}
+
+function onAdd2() {
+	let result = two.getResults(true)
+	let elP21 = document.querySelector(".add2btn p")
+	let elP22 = document.querySelectorAll(".add2btn p")[1]
+
+	elP21.textContent = ""
+	elP22.textContent = ""
+
+	if (!result) return
+
+	if (result.stetFilledIn) {
+		elP21.textContent = result.st + " - " + result.et
+		elP22.textContent = result.durationText + ", " + result.warnings
+	} else {
+		alert(result.required)
+	}
+}
+
+function clearFields2() {
+	let elP21 = document.querySelector(".add2btn p")
+	let elP22 = document.querySelectorAll(".add2btn p")[1]
+
+	elP21.textContent = ""
+	elP22.textContent = ""
+}
+
+function onChangeST2() {
+	let result = two.getResults(false)
+	let elP22 = document.querySelectorAll(".add2btn p")[1]
+	clearFields2()
+	elP22.textContent = resultMessage(result)
+}
+
+function onChangeET2() {
+	let result = two.getResults(false)
+	let elP22 = document.querySelectorAll(".add2btn p")[1]
+	clearFields2()
+	elP22.textContent = resultMessage(result)
 }
 
 document.addEventListener("DOMContentLoaded", (e) => {
+	elResults1.addEventListener("click", onResults1)
+	elResults2.addEventListener("click", onResults2)
 	elAdd1.addEventListener("click", onAdd1)
 	elAdd2.addEventListener("click", onAdd2)
-
-	// document.querySelectorAll(".stet")[0].querySelector(".start ul").addEventListener("click", onClickST1)
-	// document.querySelectorAll(".stet")[0].querySelector(".end ul").addEventListener("click", onClickET1)
-
-	// document.querySelectorAll(".stet")[1].querySelector(".start ul").addEventListener("click", onClickST2)
-	// document.querySelectorAll(".stet")[1].querySelector(".end ul").addEventListener("click", onClickET2)
 })
