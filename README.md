@@ -99,9 +99,20 @@ You may be on yesterday, choose a time and forget to change to today, it can war
 | ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `getResult(refresh)`   | This returns an object. The *warnings* property has a warnings string (set by *durationOverXHrs* and *startTimeXHrsBeforeNow* optional warnings). It also has a *required* property which has a description of what fields are missing. *durationText*, *durationDecimal* and some other handy properties. If the *refresh* parameter is set to *true*, the Start time and End time are reset, Start time becomes the previous End time, if this option is set via the *saveLastETInLocalStorage* option. |
 
-This is an example of what *getResults* returns:\
+This is an example of what *getResults* returns:
 ```
-Object { day: -1, st: "08:00 AM", et: "08:00 PM", required: "", stFilledIn: true, etFilledIn: true, stetFilledIn: true, durationText: "12 hrs", durationDecimal: 12, warnings: "The Start time was 17 hours ago.\nThis is over 10 hours.\n" }
+Object { 
+    day: -1, 
+    st: "08:00 AM", 
+    et: "08:00 PM", 
+    required: "", 
+    stFilledIn: true, 
+    etFilledIn: true, 
+    stetFilledIn: true, 
+    durationText: "12 hrs", 
+    durationDecimal: 12, 
+    warnings: "The Start time was 17 hours ago.\nThis is over 10 hours.\n"
+}
 ```
 
 We get the warning message from the *result* object. *result.warnings* has the results:
