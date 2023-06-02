@@ -115,9 +115,6 @@ Object {
 }
 ```
 
-We get the warning message from the *result* object. *result.warnings* has the results:
-*The Start time was 17 hours ago.\nThis is over 10 hours.\n*
-
 <br>
 
 ### Callbacks
