@@ -18,7 +18,7 @@ If the day is today, end time will only show the times up until now in 15 minute
 
 Here is a screenshot:
 
-![](start-time-end-time-component.gif)
+![](./img/start-time-end-time-component.gif)
 
 If the date chosen is the current day, Start time is from midnight to the
 current time in 15 minute intervals. So if it's 10am, you can choose the start
