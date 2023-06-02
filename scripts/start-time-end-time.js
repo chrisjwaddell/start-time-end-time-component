@@ -1,7 +1,5 @@
-// selected class (SC) name for items selected in ul list
 // STET - Abbreviation for Start time end time
 // stet is a reference to the start time eend time component
-const SC = "selected"
 
 // This should be the same as .times { width: 325 px;
 // minus 5px margin left and right for start and end so ((2*5px) * 2)
