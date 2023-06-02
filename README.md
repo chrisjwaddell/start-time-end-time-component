@@ -50,7 +50,7 @@ Time is used as the next Start Time.
 ```
 
 Add something like this into your javascript file:
-\
+
 ```
 let times = STET(".times", "Times", "Times", 1, {
 	autofocus: true,
