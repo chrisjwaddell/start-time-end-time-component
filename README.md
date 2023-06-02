@@ -39,7 +39,14 @@ Time is used as the next Start Time.
 ## How to get started
 ```
 <link rel="stylesheet"href="https://cdn.rawgit.com/chrisjwaddell/Drop-down-field/main/dist/style/dropdown-field.css">
-<script src="https://cdn.rawgit.com/chrisjwaddell/Drop-down-field/main/dist/scripts/dropdown-field.js">
+<link rel="stylesheet"href="https://cdn.rawgit.com/chrisjwaddell/start-time-end-time-component/main/style/start-time-end-time.css">
+
+
+<script src="https://cdn.rawgit.com/chrisjwaddell/start-time-end-time-component/main/scripts/utils.js"></script>
+<script src="https://cdn.rawgit.com/chrisjwaddell/Drop-down-field/main/dist/scripts/dropdown-field.js"></script>
+<script src="https://cdn.rawgit.com/chrisjwaddell/start-time-end-time-component/main/scripts/start-time-end-time.js"></script>
+
+
 ```
 
 Add something like this into your javascript file:
@@ -94,7 +101,7 @@ You may be on yesterday, choose a time and forget to change to today, it can war
 
 | Method                     | Description                                                                                                |
 | ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `getResult(refresh)`   | This returns an object. The *warnings* property has a warnings string (set by *durationOverXHrs* and *startTimeXHrsBeforeNow* optional warnings). It also has a *required* property which has a description of what fields are missing. *durationText*, *durationDecimal* and some other handy properties. If the *refresh* parameter is set to *true*, the Start time and End time are reset, Start time becomes the previous End time, if this option is set via the *saveLastETInLocalStorage* option. |
+| `getResult(refresh)`   | This returns an object. The *warnings* property has a warnings string (set by *durationOverXHrs* and *startTimeXHrsBeforeNow* optional warnings). It also has a *required* property which has a description of what fields are missing. *durationText*, *durationDecimal* and some other handy properties. If the *refresh* parameter is set to *true*, the Start time and End time are reset, Start time becomes the previous End time, if this option is set via the *saveLastETInLocalStorage* option. Refresh is generally used in adding something with that time range. |
 
 This is an example of what *getResults* returns:
 ```
