@@ -95,6 +95,9 @@ objects in the array.
 Warnings go into the *warnings* property of the *getResults* method. 
 You may be on yesterday, choose a time and forget to change to today, it can warn you in those cases.
 
+When the warnings string isn't empty, the CSS class *stet-warnings* is added to the Start time and End time input boxes. The default *.stet-warnings* setting is to make the background red. To change these settings, change this CSS class.
+
+
 <br>
 
 ### Methods
