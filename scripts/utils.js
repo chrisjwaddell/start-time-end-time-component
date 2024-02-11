@@ -234,3 +234,8 @@ function createElementAtt(parent, element, cls, att, text) {
 
 	return (parent && appendChild(parent, el)) || el
 }
+
+
+
+
+

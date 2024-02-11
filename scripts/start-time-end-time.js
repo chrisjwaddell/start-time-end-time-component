@@ -300,6 +300,8 @@ function STET(target, STETId, STETTitle, STtabindex, opts) {
 			let day = dayValue(stet.childNodes[1])
 			let elStart = stet.childNodes[3].childNodes[0]
 			let elEnd = stet.childNodes[3].childNodes[1]
+			let elStartInput = elStart.childNodes[0].childNodes[1].childNodes[0]
+			let elEndInput = elEnd.childNodes[0].childNodes[1].childNodes[0]
 			let st = stValue(stet.childNodes[3].childNodes[0])
 			let et = etValue(stet.childNodes[3].childNodes[1])
 			let elstUL =
@@ -314,6 +316,8 @@ function STET(target, STETId, STETTitle, STtabindex, opts) {
 				day,
 				elStart,
 				elEnd,
+				elStartInput,
+				elEndInput,
 				st,
 				et,
 				stUL: elstUL,
@@ -1186,6 +1190,14 @@ function STET(target, STETId, STETTitle, STtabindex, opts) {
 
 		let w = stetWarnings(objSTET.day, stt, ett)
 		result.warnings = w
+
+		if (w) {
+			objSTET.elStartInput.classList.add("stet-warnings")
+			objSTET.elEndInput.classList.add("stet-warnings")
+		} else {
+			objSTET.elStartInput.classList.remove("stet-warnings")
+			objSTET.elEndInput.classList.remove("stet-warnings")
+		}
 
 		if (refr) {
 			if (result.stetFilledIn) {

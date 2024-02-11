@@ -258,3 +258,8 @@
 .time-field.ddfield .ddlist li.selected {
 	background-color: var(--color-secondary);
 }
+
+.stet-warnings {
+	background-color: #ee5243;
+	color: white;
+}
