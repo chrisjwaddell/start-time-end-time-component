@@ -38,13 +38,13 @@ Time is used as the next Start Time.
 
 ## How to get started
 ```
-<link rel="stylesheet"href="https://cdn.rawgit.com/chrisjwaddell/Drop-down-field/main/dist/style/dropdown-field.css">
-<link rel="stylesheet"href="https://cdn.rawgit.com/chrisjwaddell/start-time-end-time-component/main/style/start-time-end-time.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/chrisjwaddell/Drop-down-field@main/dist/style/dropdown-field.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/chrisjwaddell/start-time-end-time-component@main/style/start-time-end-time.css">
 
 
-<script src="https://cdn.rawgit.com/chrisjwaddell/start-time-end-time-component/main/scripts/utils.js"></script>
-<script src="https://cdn.rawgit.com/chrisjwaddell/Drop-down-field/main/dist/scripts/dropdown-field.js"></script>
-<script src="https://cdn.rawgit.com/chrisjwaddell/start-time-end-time-component/main/scripts/start-time-end-time.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/chrisjwaddell/start-time-end-time-component@main/scripts/utils.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/chrisjwaddell/Drop-down-field@main/dist/scripts/dropdown-field.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/chrisjwaddell/start-time-end-time-component@main/scripts/start-time-end-time.js"></script>
 
 
 ```
